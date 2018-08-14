@@ -20,10 +20,6 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-void shortestRoute() {
-    return;
-}
-
 void terminate() {
     gtk_main_quit();
     return;
@@ -32,6 +28,11 @@ void terminate() {
 void tbd() {
     chdir("../placeholder/");
     system("./placeholder");
+    return;
+}
+
+void shortestRoute() {
+    tbd();
     return;
 }
 
