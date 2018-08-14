@@ -1,5 +1,4 @@
 #include <gtk/gtk.h>
-#include <stdio.h>
 
 int main(int argc, char *argv[])
 {
@@ -12,9 +11,6 @@ int main(int argc, char *argv[])
     gtk_builder_add_from_file (builder, "glade/_main.glade", NULL);
 
     window = GTK_WIDGET(gtk_builder_get_object(builder, "_main"));
-    if (window == 0){
-        printf("ke pex");
-    }
     gtk_builder_connect_signals(builder, NULL);
 
     g_object_unref(builder);
@@ -25,16 +21,8 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-void shortestRoute() {
-    return;
-}
-
-void terminate() {
-    return;
-}
-
-void tbd() {
-    return;
+void terminate () {
+    gtk_main_quit();
 }
 
 // called when window is closed
