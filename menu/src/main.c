@@ -27,7 +27,7 @@ void terminate() {
 
 void tbd() {
     chdir("../placeholder/");
-    system("./placeholder");
+    system("./placeholder &");
     return;
 }
 
