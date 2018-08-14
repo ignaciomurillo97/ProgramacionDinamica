@@ -1,6 +1,8 @@
 # Programacion Dinámica
 Proyecto Programado 0
 
+Investigación de Opeaciones
+
 Instituto Tecnológico de Costa Rica
 
 Estudiantes:
