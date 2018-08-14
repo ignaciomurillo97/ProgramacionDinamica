@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
     builder = gtk_builder_new();
     gtk_builder_add_from_file (builder, "glade/_main.glade", NULL);
 
-    window = GTK_WIDGET(gtk_builder_get_object(builder, "_main"));
+    window = GTK_WIDGET(gtk_builder_get_object(builder, "PendingWindow"));
     gtk_builder_connect_signals(builder, NULL);
 
     g_object_unref(builder);
