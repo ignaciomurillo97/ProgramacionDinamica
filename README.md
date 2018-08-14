@@ -1,7 +1,7 @@
 # Programacion Dinámica
 Proyecto Programado 0
 
-Investigación de Opeaciones
+Investigación de Operaciones 
 
 Instituto Tecnológico de Costa Rica
 
