@@ -1,5 +1,5 @@
 # Programacion Dinámica
-Proyecto Programado 0
+Proyecto Programado
 
 Investigación de Opeaciones
 
