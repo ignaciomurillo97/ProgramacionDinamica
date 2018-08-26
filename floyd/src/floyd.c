@@ -1,6 +1,7 @@
-#include<stdlib.h>
+#include <stdlib.h>
 #include <math.h>
 #include "floyd.h"
+#include <stdio.h>
 
 
 struct FloydData *initFloydData(int pNodeCount, float **graph) {
@@ -10,6 +11,7 @@ struct FloydData *initFloydData(int pNodeCount, float **graph) {
 
   // Se reservan los espacios para las n matrices + la matriz original
   data->optimizedDistances = (float***)malloc(sizeof(float**) * (data->nodeCount + 1));
+  data->optimizedDistances[0] = graph;
   for (i = 1; i <= data->nodeCount; i++) {
     data->optimizedDistances[i] = (float**)malloc(sizeof(float*) * data->nodeCount);
     for (j = 0; j < data->nodeCount; j ++) {
@@ -22,16 +24,30 @@ struct FloydData *initFloydData(int pNodeCount, float **graph) {
 void optimize(struct FloydData *data) {
   int i, j, k;
   for (i = 1; i < data->nodeCount + 1; i++) {
-    float** previousList = data->optimizedDistances[i];
+    float** previousList = data->optimizedDistances[i - 1];
+    float** currentList = data->optimizedDistances[i];
     int currNode = i - 1;
     for (j = 0; j < data->nodeCount; j++) {
       for (k = 0; k < data->nodeCount; k++) {
         float new = previousList[j][currNode] + previousList[currNode][k];
         float old = previousList[j][k];
         if (new < old) {
-          previousList[j][k] = new;
+          currentList[j][k] = new;
+        } else {
+          currentList[j][k] = old;
         }
       }
     }
   }
+}
+
+void printOptimal(int tableIndex, struct FloydData *data) {
+  float*** matrices = data->optimizedDistances;
+  for (int i = 0; i < data->nodeCount; i++) {
+    for (int j = 0; j < data->nodeCount; j++) {
+      printf("%f, ", matrices[tableIndex][i][j]);
+    }
+    printf("\n");
+  }
+  printf("\n");
 }

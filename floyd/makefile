@@ -27,10 +27,10 @@ LD=gcc
 LDFLAGS=$(PTHREAD) $(GTKLIB) -export-dynamic
 
 all: $(OBJECTS)
-	$(LD) -o $(TARGET) $^ $(LDFLAGS)
+	$(LD) -o $(TARGET) $(OBJECTS) $(LDFLAGS)
 
 $(OBJ)/%.o: $(SRC)/%.c
-	$(CC) -I$(SRC) -c $(CCFLAGS) $< $(GTKLIB) -o $@
+	$(CC) -c $(CCFLAGS) $< $(GTKLIB) -o $@
 
 echo:
 	echo $(SOURCES)
