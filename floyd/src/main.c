@@ -19,10 +19,19 @@ float **createTestGraph(int size) {
 }
 
 int main(int argc, char *argv[]) {
-  float **myGraph = createTestGraph(3);
+  float **myGraph = createTestGraph(6);
 
-  struct FloydData *data = initFloydData(3, myGraph);
+  struct FloydData *data = initFloydData(6, myGraph);
   optimize(data);
+
+  printOptimal(0, data);
+  printOptimal(1, data);
+  printOptimal(2, data);
+  printOptimal(3, data);
+  printOptimal(4, data);
+  printOptimal(5, data);
+  printOptimal(6, data);
+  printRoutes(data);
 
   GtkBuilder      *builder = 0; 
   GtkWidget       *window = 0;
@@ -76,7 +85,7 @@ void fillMatrix (GtkWidget *grid) {
   int i,j;
 
   for (i = 0; i < gridSize; i++) {
-      gtk_grid_insert_column((GtkGrid*)grid, (gint)i);
+    gtk_grid_insert_column((GtkGrid*)grid, (gint)i);
     for (j = 0; j < gridSize; j++) {
       gtk_grid_insert_row((GtkGrid*)grid, (gint)j);
     }
