@@ -2,9 +2,9 @@
 #include <math.h>
 #include <stdio.h>
 
-int width = 1500;
-int height = 1000;
-float radius = 50;
+int width = 700;
+int height = 700;
+float radius = 30;
 
 struct Node {
   float x;
@@ -57,7 +57,7 @@ void edge(struct Node node1, struct Node node2, float weight, cairo_t *cr) {
   cairo_stroke (cr);
 }
 
-void draw (float matrix[4][4], int matrixSize, cairo_t *cr)
+void draw (float **matrix, int matrixSize, cairo_t *cr)
 {
   cairo_surface_t *surface =
     cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
