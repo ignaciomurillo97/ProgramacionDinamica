@@ -52,6 +52,29 @@ void optimize(struct FloydData *data) {
   }
 }
 
+int findOptimalRouteAux(int a, int b, int last, int* route, struct FloydData *data) {
+  if (last == 0){route[last] = a; last++;};
+  int intermediateNode = data->routes[a][b];
+  if (intermediateNode == -1) {
+    route[last] = b; last++;
+  } else {
+    last = findOptimalRouteAux(a, intermediateNode, last, route, data);
+    last = findOptimalRouteAux(intermediateNode, b, last, route, data);
+  }
+  return last;
+}
+
+int* findOptimalRoute(int a, int b, struct FloydData *data) {
+  int *tmp = (int*)malloc(sizeof(int) * data->nodeCount);
+  int size = findOptimalRouteAux(a, b, 0, tmp, data);
+  int *routeOut = (int*)malloc(sizeof(int) * size + 1);
+  routeOut[0] = size;
+  for(int i = 0; i < size; i++) {
+    routeOut[i + 1] = tmp[i];
+  }
+  return routeOut;
+}
+
 void printOptimal(int tableIndex, struct FloydData *data) {
   float*** matrices = data->optimizedDistances;
   int i, j;

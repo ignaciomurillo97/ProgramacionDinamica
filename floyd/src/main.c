@@ -20,19 +20,28 @@ float **createTestGraph(int size) {
 }
 
 int main(int argc, char *argv[]) {
-  float **myGraph = createTestGraph(6);
+  //float **myGraph = createTestGraph(6);
 
-  struct FloydData *data = initFloydData(6, myGraph);
-  optimize(data);
+  //struct FloydData *data = initFloydData(6, myGraph);
+  //optimize(data);
 
-  printOptimal(0, data);
-  printOptimal(1, data);
-  printOptimal(2, data);
-  printOptimal(3, data);
-  printOptimal(4, data);
-  printOptimal(5, data);
-  printOptimal(6, data);
-  printRoutes(data);
+  //int* optimalRoute = findOptimalRoute(0, 4, data);
+  //int orSize = optimalRoute[0];
+  //optimalRoute++;
+  //printf("size:%d\n", orSize);
+
+  //printOptimal(0, data);
+  //printOptimal(1, data);
+  //printOptimal(2, data);
+  //printOptimal(3, data);
+  //printOptimal(4, data);
+  //printOptimal(5, data);
+  //printOptimal(6, data);
+  //printRoutes(data);
+
+  //for (int i = 0; i < orSize; i++) {
+  //  printf("%d, ", optimalRoute[i]);
+  //}
 
   GtkBuilder      *builder = 0; 
   GtkWidget       *window = 0;
@@ -56,7 +65,7 @@ int main(int argc, char *argv[]) {
 void showMatrixWindow () {
   GtkBuilder      *builder = 0; 
   GtkWidget       *window = 0;
-  GtkWidget       *button = 0;
+  GtkWidget       *matrix = 0;
 
   builder = gtk_builder_new();
   gtk_builder_add_from_file (builder, "glade/Win1.glade", NULL);
@@ -64,9 +73,9 @@ void showMatrixWindow () {
   window = GTK_WIDGET(gtk_builder_get_object(builder, "FloydGUI"));
   gtk_builder_connect_signals(builder, NULL);
 
-  button = GTK_WIDGET(gtk_builder_get_object(builder, "InputGrid"));
+  matrix = GTK_WIDGET(gtk_builder_get_object(builder, "InputGrid"));
   gtk_builder_connect_signals(builder, NULL);
-  fillMatrix(button);
+  fillMatrix(matrix);
 
   g_object_unref(builder);
 
