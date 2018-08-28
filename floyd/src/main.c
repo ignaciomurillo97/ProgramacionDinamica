@@ -3,6 +3,9 @@
 #include "time.h"
 #include <stdio.h>
 
+int gridSize = 10;
+void fillMatrix(GtkWidget* grid);
+
 float **createTestGraph(int size) {
   srand(time(NULL));
   float **graph = (float**)malloc(sizeof(float*) * size);
@@ -43,27 +46,49 @@ int main(int argc, char *argv[]) {
 void showMatrixWindow () {
   GtkBuilder      *builder = 0; 
   GtkWidget       *window = 0;
+  GtkWidget       *button = 0;
 
   builder = gtk_builder_new();
-  gtk_builder_add_from_file (builder, "glade/_main.glade", NULL);
+  gtk_builder_add_from_file (builder, "glade/Win1.glade", NULL);
 
-  window = GTK_WIDGET(gtk_builder_get_object(builder, "window_menu"));
+  window = GTK_WIDGET(gtk_builder_get_object(builder, "FloydGUI"));
   gtk_builder_connect_signals(builder, NULL);
+
+  button = GTK_WIDGET(gtk_builder_get_object(builder, "InputGrid"));
+  gtk_builder_connect_signals(builder, NULL);
+  fillMatrix(button);
 
   g_object_unref(builder);
 
   gtk_widget_show(window);                
 }
 
-void terminate() {
-  gtk_main_quit();
-  return;
-}
-
 void cancel () {
-  printf("cancel");
+  gtk_main_quit();
 }
 
 void accept () {
   showMatrixWindow();
+}
+
+void fillMatrix (GtkWidget *grid) {
+  GtkWidget *button;
+  int i,j;
+
+  for (i = 0; i < gridSize; i++) {
+      gtk_grid_insert_column((GtkGrid*)grid, (gint)i);
+    for (j = 0; j < gridSize; j++) {
+      gtk_grid_insert_row((GtkGrid*)grid, (gint)j);
+    }
+  }
+
+  for (i = 0; i < gridSize; i++) {
+    for (j = 0; j < gridSize; j++) {
+      button = gtk_button_new_with_label("label");
+      gtk_grid_attach(GTK_GRID (grid), button, i, j, 1, 1);
+      gtk_widget_show(button);
+    }
+  }
+
+
 }
