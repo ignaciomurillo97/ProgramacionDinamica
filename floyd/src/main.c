@@ -27,8 +27,7 @@ float **createGraph(int size) {
 }
 
 int main(int argc, char *argv[]) {
-
-  //struct FloydData *data = initFloydData(6, myGraph);
+  //struct FloydData *data = initFloydData(6, graph);
   //optimize(data);
 
   //int* optimalRoute = findOptimalRoute(0, 4, data);
@@ -155,19 +154,19 @@ void next(GtkWidget *grid) {
       optimize(data);
     }
 
-    for (int i = 0; i < gridSize; i++) {
+    for (int i = 0; i < gridSize + 1; i++) {
       printOptimal(i, data);
     }
     currMatrix++;
 
-    //for (i = 0; i < gridSize; i++) {
-    //  for (j = 0; j < gridSize; j++) {
-    //    int len = snprintf(NULL, 0, "%f", data->optimizedDistances[currMatrix][i][j]);
-    //    char *result = (char *)malloc(len + 1);
-    //    snprintf(result, len + 1, "%f", data->optimizedDistances[currMatrix][i][j]);
-    //    entry = inputGrid[i][j];
-    //    gtk_entry_set_text(GTK_ENTRY(entry), result);
-    //  }
-    //}
+    for (i = 0; i < gridSize; i++) {
+      for (j = 0; j < gridSize; j++) {
+        int len = snprintf(NULL, 0, "%f", data->optimizedDistances[currMatrix][i][j]);
+        char *result = (char *)malloc(len + 1);
+        snprintf(result, len + 1, "%f", data->optimizedDistances[currMatrix][i][j]);
+        entry = inputGrid[i][j];
+        gtk_entry_set_text(GTK_ENTRY(entry), result);
+      }
+    }
   }
 }
