@@ -22,7 +22,6 @@ LIBS=-L/usr/lib -lcgraph -lgvc -lgraph
 
 CCFLAGS=$(LIBS) $(DEBUG) $(OPT) $(WARN) $(PTHREAD) -pipe
 
-GVCLIB=`=‘pkg-config libgvc --cflag` `pkg-config libgvc --lib`
 GTKLIB=`pkg-config --cflags --libs gtk+-3.0` 
 
 # linker

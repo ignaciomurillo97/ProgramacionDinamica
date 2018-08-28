@@ -34,18 +34,23 @@ struct FloydData *initFloydData(int pNodeCount, float **graph) {
 void optimize(struct FloydData *data) {
   int i, j, k;
   for (i = 1; i < data->nodeCount + 1; i++) {
-    float** previousList = data->optimizedDistances[i - 1];
-    float** currentList = data->optimizedDistances[i];
+    //float** previousList = data->optimizedDistances[i - 1];
+    //float** currentList = data->optimizedDistances[i];
     int currNode = i - 1;
     for (j = 0; j < data->nodeCount; j++) {
       for (k = 0; k < data->nodeCount; k++) {
-        float new = previousList[j][currNode] + previousList[currNode][k];
-        float old = previousList[j][k];
+        float new = data->optimizedDistances[currNode][j][i - 1] + data->optimizedDistances[currNode][i - 1][k];
+        float old = data->optimizedDistances[currNode][j][k];
+        printf("i: %i, j: %i, k: %i; ", currNode, j, i - 1);
+        printf("o i: %i, j: %i, k: %i; ", currNode, j, k );
+        printf("\n");
         if (new < old) {
-          currentList[j][k] = new;
+          data->optimizedDistances[i][j][k] = new;
           data->routes[j][k] = currNode;
+          //printf("new: %f, ", data->optimizedDistances[i][j][k]);
         } else {
-          currentList[j][k] = old;
+          data->optimizedDistances[i][j][k] = old;
+          //printf("old: %f, ", data->optimizedDistances[i][j][k]);
         }
       }
     }

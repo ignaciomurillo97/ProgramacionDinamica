@@ -32,7 +32,7 @@ void tbd() {
 }
 
 void shortestRoute() {
-    tbd();
+    chdir("../floyd/rutasOptimas");
     return;
 }
 
