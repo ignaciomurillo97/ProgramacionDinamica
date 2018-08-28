@@ -12,15 +12,18 @@ CC=gcc
 # debug
 DEBUG=-g
 # optimisation
-OPT=-O0
+OPT=-O0 -O2
 # warnings
 WARN=-Wall
 
 PTHREAD=-pthread
 
-CCFLAGS=$(DEBUG) $(OPT) $(WARN) $(PTHREAD) -pipe
+LIBS=-L/usr/lib -lcgraph -lgvc -lgraph 
 
-GTKLIB=`pkg-config --cflags --libs gtk+-3.0`
+CCFLAGS=$(LIBS) $(DEBUG) $(OPT) $(WARN) $(PTHREAD) -pipe
+
+GVCLIB=`=‘pkg-config libgvc --cflag` `pkg-config libgvc --lib`
+GTKLIB=`pkg-config --cflags --libs gtk+-3.0` 
 
 # linker
 LD=gcc

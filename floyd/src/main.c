@@ -2,6 +2,7 @@
 #include "floyd.h"
 #include "time.h"
 #include <stdio.h>
+#include <graphviz/gvc.h>
 
 int gridSize = 10;
 void fillMatrix(GtkWidget* grid);
