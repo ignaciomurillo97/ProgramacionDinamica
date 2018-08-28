@@ -28,7 +28,6 @@ float **createGraph(int size) {
 }
 
 int main(int argc, char *argv[]) {
-
   GtkBuilder      *builder = 0; 
   GtkWidget       *window = 0;
 
@@ -44,29 +43,33 @@ int main(int argc, char *argv[]) {
 
   g_object_unref(builder);
 
-  gtk_widget_show(window);                
+  gtk_widget_show(window);
   gtk_main();
 
   return 0;
 }
 
-//static void do_drawing(cairo_t *cr, gpointer user_data) {
-//  draw(graph, gridSize, cr);
-//
-//  return;
-//}
-//
-//static gboolean on_darea_draw(GtkWidget *widget, cairo_t *cr, gpointer user_data){      
-//  //do_drawing(cr, user_data);
-//
-//  return FALSE;
-//}
+static void do_drawing(cairo_t *cr, gpointer user_data) {
+  float meinMatrix[4][4] = {{0, 5, 1, 2},
+                        {5, 0, 3, INFINITY},
+                        {1, 3, 0, 4},
+                        {2, INFINITY, 4, 0}};
+  draw(meinMatrix, 4, cr);
+
+  return;
+}
+
+static gboolean on_darea_draw(GtkWidget *widget, cairo_t *cr, gpointer user_data){
+  do_drawing(cr, user_data);
+
+  return FALSE;
+}
 
 void showMatrixWindow () {
-  GtkBuilder      *builder = 0; 
+  GtkBuilder      *builder = 0;
   GtkWidget       *window = 0;
   GtkWidget       *matrix = 0;
-  //GtkDrawingArea  *darea = 0;
+  GtkDrawingArea  *darea = 0;
 
   builder = gtk_builder_new();
   gtk_builder_add_from_file (builder, "glade/Win1.glade", NULL);
@@ -77,8 +80,8 @@ void showMatrixWindow () {
   const gchar* text = gtk_entry_get_text(GTK_ENTRY(textBoxCuantity));
   gridSize = atoi(text);
 
-  //darea = (GtkDrawingArea*)GTK_WIDGET(gtk_builder_get_object(builder, "darea"));
-  //g_signal_connect(G_OBJECT(darea), "draw", G_CALLBACK(on_darea_draw), NULL);
+  darea = (GtkDrawingArea*)GTK_WIDGET(gtk_builder_get_object(builder, "darea"));
+  g_signal_connect(G_OBJECT(darea), "draw", G_CALLBACK(on_darea_draw), NULL);
 
   matrix = GTK_WIDGET(gtk_builder_get_object(builder, "InputGrid"));
   graph = createGraph(gridSize);
@@ -142,7 +145,6 @@ void next(GtkWidget *grid) {
       for (i = 0; i < gridSize; i++) {
         for (j = 0; j < gridSize; j++) {
           entry = inputGrid[i][j];
-          if (entry == NULL) printf("esta kak es nulo");
           const gchar* labelText = gtk_entry_get_text(GTK_ENTRY((GtkEntry*)entry));
           graph[i][j] = strtof(labelText, NULL);
         }
@@ -157,14 +159,14 @@ void next(GtkWidget *grid) {
     }
     currMatrix++;
 
-    //for (i = 0; i < gridSize; i++) {
-    //  for (j = 0; j < gridSize; j++) {
-    //    int len = snprintf(NULL, 0, "%f", data->optimizedDistances[currMatrix][i][j]);
-    //    char *result = (char *)malloc(len + 1);
-    //    snprintf(result, len + 1, "%f", data->optimizedDistances[currMatrix][i][j]);
-    //    entry = inputGrid[i][j];
-    //    gtk_entry_set_text(GTK_ENTRY(entry), result);
-    //  }
-    //}
+    for (i = 0; i < gridSize; i++) {
+      for (j = 0; j < gridSize; j++) {
+        int len = snprintf(NULL, 0, "%f", data->optimizedDistances[currMatrix][i][j]);
+        char *result = (char *)malloc(len + 1);
+        snprintf(result, len + 1, "%f", data->optimizedDistances[currMatrix][i][j]);
+        entry = inputGrid[i][j];
+        gtk_entry_set_text(GTK_ENTRY(entry), result);
+      }
+    }
   }
 }

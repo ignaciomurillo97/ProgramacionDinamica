@@ -12,7 +12,7 @@ CC=gcc
 # debug
 DEBUG=-g
 # optimisation
-OPT=-O0
+OPT=-O0 -O2
 # warnings
 WARN=-Wall
 
