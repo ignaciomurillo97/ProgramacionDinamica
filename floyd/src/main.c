@@ -3,6 +3,7 @@
 #include "time.h"
 #include <stdio.h>
 #include <math.h>
+#include "graphDraw.h"
 
 int gridSize = 10;
 GtkWidget *textBoxCuantity = 0;
@@ -69,10 +70,27 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
+static void do_drawing(cairo_t *cr, gpointer user_data) {
+  float meinMatrix[4][4] = {{0, 5, 1, 2},
+                        {5, 0, 3, INFINITY},
+                        {1, 3, 0, 4},
+                        {2, INFINITY, 4, 0}};
+  draw(meinMatrix, 4, cr);
+
+  return;
+}
+
+static gboolean on_darea_draw(GtkWidget *widget, cairo_t *cr, gpointer user_data){      
+  do_drawing(cr, user_data);
+
+  return FALSE;
+}
+
 void showMatrixWindow () {
   GtkBuilder      *builder = 0; 
   GtkWidget       *window = 0;
   GtkWidget       *matrix = 0;
+  GtkDrawingArea  *darea = 0;
 
   builder = gtk_builder_new();
   gtk_builder_add_from_file (builder, "glade/Win1.glade", NULL);
@@ -82,6 +100,9 @@ void showMatrixWindow () {
 
   const gchar* text = gtk_entry_get_text(GTK_ENTRY(textBoxCuantity));
   gridSize = atoi(text);
+
+  darea = (GtkDrawingArea*)GTK_WIDGET(gtk_builder_get_object(builder, "darea"));
+  g_signal_connect(G_OBJECT(darea), "draw", G_CALLBACK(on_darea_draw), NULL);
 
   matrix = GTK_WIDGET(gtk_builder_get_object(builder, "InputGrid"));
   graph = createGraph(gridSize);

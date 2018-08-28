@@ -75,7 +75,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkDrawingArea" id="DrawArea">
+              <object class="GtkDrawingArea" id="darea">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
               </object>
