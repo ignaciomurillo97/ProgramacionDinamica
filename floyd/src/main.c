@@ -7,6 +7,7 @@
 
 int gridSize = 10;
 GtkWidget *textBoxCuantity = 0;
+GtkWidget *textBoxRoute = 0;
 
 int currMatrix = 0;
 struct FloydData* data;
@@ -37,6 +38,7 @@ int main(int argc, char *argv[]) {
   gtk_builder_add_from_file (builder, "glade/_main.glade", NULL);
 
   textBoxCuantity = GTK_WIDGET(gtk_builder_get_object(builder, "Entry_Cuantity"));
+  textBoxRoute = GTK_WIDGET(gtk_builder_get_object(builder, "matrizRutas"));
 
   window = GTK_WIDGET(gtk_builder_get_object(builder, "window_menu"));
   gtk_builder_connect_signals(builder, NULL);
@@ -86,6 +88,23 @@ void showMatrixWindow () {
   matrix = GTK_WIDGET(gtk_builder_get_object(builder, "InputGrid"));
   graph = createGraph(gridSize);
   fillMatrix(matrix);
+
+  g_object_unref(builder);
+
+  gtk_widget_show(window);
+}
+
+void showRoutes () {
+  GtkBuilder      *builder = 0;
+  GtkWidget       *window = 0;
+
+  builder = gtk_builder_new();
+  gtk_builder_add_from_file (builder, "glade/Win1.glade", NULL);
+
+  textBoxRoute = GTK_WIDGET(gtk_builder_get_object(builder, "RouteLabel"));
+
+  window = GTK_WIDGET(gtk_builder_get_object(builder, "FloydGUI"));
+  gtk_builder_connect_signals(builder, NULL);
 
   g_object_unref(builder);
 
@@ -168,5 +187,20 @@ void next(GtkWidget *grid) {
         gtk_entry_set_text(GTK_ENTRY(entry), result);
       }
     }
+    else {
+      showRoutes();
+    }
   }
+}
+
+void viewRoutes() {
+  int* optimalRoute = findOptimalRoute(0, 2, data);
+  int len = optimalRoute[0];
+  optimalRoute++;
+  char str[len];
+  int i=0;
+  int index = 0;
+  for (i=0; i<optimalRoute; i++)
+    index += snprintf(&str[index], len-index, "%d -> ", optimalRoute[i]);
+  gtk_label_set_text(textBoxRoute, str);
 }
