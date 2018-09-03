@@ -1,5 +1,5 @@
 # change application name here (executable output name)
-TARGET=rutasOptimas
+TARGET=knapsack
 
 # folders
 SRC=src

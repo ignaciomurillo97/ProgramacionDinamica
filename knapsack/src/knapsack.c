@@ -2,13 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
- 
-typedef struct {
-    char *name;
-    int weight;
-    int value;
-    int count;
-} item_t;
+#include "knapsack.h"
 
 // item_t items[] = {
 //     {"map",                      9,   150,   1},
@@ -42,16 +36,13 @@ typedef struct {
 //     {"Anillo",                   1,  15000,   1},
 // };
 
- item_t items[] = {
-     {"Agua",                   4,  11,   100},
-     {"Calcetines",             3,    7,  100},
-     {"Galletas",               5,  12,   100},
- };
+// item_t items[] = {
+//     {"Agua",                   4,  11,   100},
+//     {"Calcetines",             3,    7,  100},
+//     {"Galletas",               5,  12,   100},
+// };
 
- 
-int n = sizeof (items) / sizeof (item_t);
- 
-int *knapsack (int knapsackCapacity) {
+int *knapsack (int knapsackCapacity, item_t* items, int n) {
     int i, j, k, v, *mm, **tabla, *s, *colorR, **color;
     mm = calloc((n + 1) * (knapsackCapacity + 1), sizeof (int));
     tabla = malloc((n + 1) * sizeof (int *));
@@ -108,22 +99,22 @@ int *knapsack (int knapsackCapacity) {
     return s;
 }
 
-int main () {
-    clock_t begin = clock();
-    int i, tc = 0, tw = 0, tv = 0, *s;
-    s = knapsack(10);
-    for (i = 0; i < n; i++) {
-        if (s[i]) {
-            printf("%-22s %5d %5d %5d\n", items[i].name, s[i], s[i] * items[i].weight, s[i] * items[i].value);
-            tc += s[i];
-            tw += s[i] * items[i].weight;
-            tv += s[i] * items[i].value;
-        }
-    }
-    printf("%-22s %5d %5d %5d\n", "count, weight, value:", tc, tw, tv);
-    clock_t end = clock();
-    double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-    printf("time: %f", time_spent);
-    return 0;
-}
+//int main () {
+//    clock_t begin = clock();
+//    int i, tc = 0, tw = 0, tv = 0, *s;
+//    s = knapsack(10);
+//    for (i = 0; i < n; i++) {
+//        if (s[i]) {
+//            printf("%-22s %5d %5d %5d\n", items[i].name, s[i], s[i] * items[i].weight, s[i] * items[i].value);
+//            tc += s[i];
+//            tw += s[i] * items[i].weight;
+//            tv += s[i] * items[i].value;
+//        }
+//    }
+//    printf("%-22s %5d %5d %5d\n", "count, weight, value:", tc, tw, tv);
+//    clock_t end = clock();
+//    double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+//    printf("time: %f", time_spent);
+//    return 0;
+//}
  
