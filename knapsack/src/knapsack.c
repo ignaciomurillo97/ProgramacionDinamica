@@ -42,27 +42,30 @@
 //     {"Galletas",               5,  12,   100},
 // };
 
-int *knapsack (int knapsackCapacity, item_t* items, int n) {
-    int i, j, k, v, *mm, **tabla, *s, *colorR, **color;
+knapsackResult *knapsack (int knapsackCapacity, item_t* items, int n) {
+    int i, j, k, v, *mm;
+    knapsackResult *result = malloc(sizeof(knapsackResult));
+    result->n = n;
+    result->knapsackCapacity = knapsackCapacity;
     mm = calloc((n + 1) * (knapsackCapacity + 1), sizeof (int));
-    tabla = malloc((n + 1) * sizeof (int *));
-    colorR = calloc((n + 1) * (knapsackCapacity + 1), sizeof (int));
-    color = malloc((n + 1) * sizeof (int *));
-    tabla[0] = mm;
+    result->tabla = malloc((n + 1) * sizeof (int *));
+    result->colorR = calloc((n + 1) * (knapsackCapacity + 1), sizeof (int));
+    result->color = malloc((n + 1) * sizeof (int *));
+    result->tabla[0] = mm;
     //Knapsack
     for (i = 1; i <= n; i++) {
-        tabla[i] = &mm[i * (knapsackCapacity + 1)];
-        color[i] = &colorR[i * (knapsackCapacity + 1)];
+        result->tabla[i] = &mm[i * (knapsackCapacity + 1)];
+        result->color[i] = &result->colorR[i * (knapsackCapacity + 1)];
         for (j = 0; j <= knapsackCapacity; j++) {
-            tabla[i][j] = tabla[i - 1][j];
+            result->tabla[i][j] = result->tabla[i - 1][j];
             for (k = 1; k <= items[i - 1].count; k++) {
                 if (k * items[i - 1].weight > j) {
                     break;
                 }
-                v = tabla[i - 1][j - k * items[i - 1].weight] + k * items[i - 1].value;
-                if (v > tabla[i][j]) {
-                    color[i][j]++;
-                    tabla[i][j] = v;
+                v = result->tabla[i - 1][j - k * items[i - 1].weight] + k * items[i - 1].value;
+                if (v > result->tabla[i][j]) {
+                    result->color[i][j]++;
+                    result->tabla[i][j] = v;
                 }
             }
         }
@@ -70,7 +73,7 @@ int *knapsack (int knapsackCapacity, item_t* items, int n) {
 
     for (i = 1; i <= n; i++) {
         for (j = 0; j <= knapsackCapacity; j++) {
-            printf("%d ",tabla[i][j]);
+            printf("%d ",result->tabla[i][j]);
         }
         printf("\n ");
     }
@@ -78,25 +81,25 @@ int *knapsack (int knapsackCapacity, item_t* items, int n) {
     printf("COLORES \n ");
     for (i = 1; i <= n; i++) {
         for (j = 0; j <= knapsackCapacity; j++) {
-            printf("%d ",color[i][j]);
+            printf("%d ",result->color[i][j]);
         }
         printf("\n ");
     }
 
     //Respuesta
-    s = calloc(n, sizeof (int));
+    result->s = calloc(n, sizeof (int));
     for (i = n, j = knapsackCapacity; i > 0; i--) {
-        int v = tabla[i][j];
-        for (k = 0; v != tabla[i - 1][j] + k * items[i - 1].value; k++) {
-            s[i - 1]++;   
+        int v = result->tabla[i][j];
+        for (k = 0; v != result->tabla[i - 1][j] + k * items[i - 1].value; k++) {
+            result->s[i - 1]++;   
             j -= items[i - 1].weight;
         }
     }
     
 
-    free(mm);
-    free(tabla);
-    return s;
+    //free(mm);
+    //free(result->tabla);
+    return result;
 }
 
 //int main () {

@@ -50,6 +50,7 @@ typedef struct itemLinkedList {
 } itemLinkedList;
 
 itemLinkedList* itemList;
+void generateMath();
 
 int main(int argc, char *argv[]) {
   GtkBuilder      *builder = 0; 
@@ -82,6 +83,56 @@ int main(int argc, char *argv[]) {
   gtk_main();
 
   return 0;
+}
+
+void showResultWindow(knapsackResult* result) {
+  GtkBuilder      *builder = 0; 
+  GtkWidget       *window = 0;
+  GtkGrid         *grid = 0;
+
+  builder = gtk_builder_new();
+  gtk_builder_add_from_file (builder, "glade/result_window.glade", NULL);
+
+  window = GTK_WIDGET(gtk_builder_get_object(builder, "result_window"));
+  grid = (GtkGrid*)GTK_WIDGET(gtk_builder_get_object(builder, "result_table"));
+
+  for (int i = 1; i <= result->n; i++) {
+    gtk_grid_insert_column(grid, i-1);
+    for (int j = 0; j <= result->knapsackCapacity; j++) {
+      gtk_grid_insert_row(grid, j);
+    }
+  }
+
+  for (int i = 1; i <= result->n; i++) {
+    for (int j = 0; j <= result->knapsackCapacity; j++) {
+      printf("%d ",result->tabla[i][j]);
+      char buff[50];
+      if (result->color[i][j])
+        snprintf(buff, 50, "<span foreground=\"red\">%i</span>", result->tabla[i][j]);
+      else
+        snprintf(buff, 50, "<span foreground=\"green\">%i</span>", result->tabla[i][j]);
+      GtkWidget *label = gtk_label_new(NULL);
+      gtk_label_set_markup(GTK_LABEL(label), buff);
+      gtk_grid_attach(grid, label, i-1, j, 1, 1);
+      gtk_widget_show(label);
+    }
+    printf("\n ");
+  }
+
+  for (int i = 1; i <= result->n; i++) {
+    for (int j = 0; j <= result->knapsackCapacity; j++) {
+    }
+  }
+
+  gtk_builder_connect_signals(builder, NULL);
+
+  g_object_unref(builder);
+
+  gtk_widget_show(window);
+  gtk_main();
+
+  return;
+
 }
 
 // recibe el valor del input a validar y en nombre del input para imprimir errores.
@@ -160,6 +211,7 @@ void addKnapsackItem () {
   labelFromString(stringItemCost,     newEntry);
   labelFromString(stringItemValue,    newEntry);
 
+  newValue->name = (char*)malloc(sizeof(char)*strlen(stringItemName));
   strcpy(newValue->name, stringItemName);
   newValue->cost = strtol(stringItemCost, NULL, 10);
   newValue->value = strtol(stringItemValue, NULL, 10);
@@ -176,12 +228,30 @@ void addKnapsackItem () {
 }
 
 void calculate () {
+  generateMath();
+
+  const gchar* stringKnapsackCapacity = gtk_entry_get_text(knapsackCapacity); 
+  if (
+      !isStringInputValid (stringKnapsackCapacity, "knapsackCapacity")
+     ) return; 
+  long knapsackCapacityValue = strtol(stringKnapsackCapacity, NULL, 10);
+
+  int i = 0;
+  item_t* knapsackItems = (item_t*)malloc(sizeof(item_t) * valueList->count);
   valueLine *curr;
   curr = valueList->first;
+
   while (curr != NULL) {
     printf("{%s, %ld, %ld, %ld}\n", curr->name, curr->quantity, curr->cost, curr->value);
+    knapsackItems[i].name   = curr->name;
+    knapsackItems[i].weight = curr->cost;
+    knapsackItems[i].value  = curr->value;
+    knapsackItems[i].count  = curr->quantity;
     curr = curr->next;
+    i++;
   }
+  knapsackResult* result = knapsack(knapsackCapacityValue, knapsackItems, valueList->count); 
+  showResultWindow(result);
 }
 
 void loadFromFile() {
@@ -190,4 +260,23 @@ void loadFromFile() {
 
 void closeGtkApp() {
   gtk_main_quit();
+}
+
+void closeGtkWindow(GtkWindow* window) {
+  gtk_window_close(window);
+}
+
+void generateMath() {
+  int length = 45 + valueList->count * 20;
+  char math[length];
+  //x<sub>1</sub>
+  //<span font_desc="Serif Italic 18">Z = </span>
+  strcpy(math, "<span font_desc=\"Serif Italic 18\">Z = ");
+  for (int i = 0; i < valueList->count; i ++) {
+    valueLine* currLine = valueList->first;
+    char currOpperand[20];
+    snprintf(currOpperand, 20, "x<sub>%li</sub>", currLine->value);
+    strcat(math, currOpperand);
+  }
+  printf("%s", math);
 }
