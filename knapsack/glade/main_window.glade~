@@ -305,7 +305,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <signal name="clicked" handler="saveToFile" swapped="no"/>
+                <signal name="clicked" handler="openSaveDialog" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -365,6 +365,9 @@
   <object class="GtkWindow" id="Main_Window">
     <property name="can_focus">False</property>
     <child>
+      <placeholder/>
+    </child>
+    <child>
       <object class="GtkBox">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
@@ -397,7 +400,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <signal name="clicked" handler="knapsackOneZero" swapped="no"/>
+                <signal name="clicked" handler="knapsackOneZero" object="Input_Window" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>

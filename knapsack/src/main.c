@@ -330,9 +330,45 @@ void loadFromFile() {
     free(line);
 }
 
-void saveToFile () {
+void openSaveDialog(){
+  GtkWidget *dialog;
+GtkFileChooser *chooser;
+GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SAVE;
+gint res;
+
+dialog = gtk_file_chooser_dialog_new ("Save File",
+                                      window,
+                                      action,
+                                      "Cancel",
+                                      GTK_RESPONSE_CANCEL,
+                                      "Save",
+                                      GTK_RESPONSE_ACCEPT,
+                                      NULL);
+chooser = GTK_FILE_CHOOSER (dialog);
+
+gtk_file_chooser_set_do_overwrite_confirmation (chooser, TRUE);
+gtk_file_chooser_set_current_name (chooser,("Untitled document"));
+
+res = gtk_dialog_run (GTK_DIALOG (dialog));
+if (res == GTK_RESPONSE_ACCEPT)
+  {
+    char *filename;
+
+    filename = gtk_file_chooser_get_filename (chooser);
+    saveToFile(filename);
+    g_free (filename);
+  }
+
+gtk_widget_destroy (dialog);
+}
+
+void saveToFile (char* filename) {
   FILE *fp;
-  fp = fopen("test.txt", "w+");
+  fp = fopen(filename, "w+");
+  
+  // char file[1024];
+  // FILE *fp = popen("zenity --file-selection", "w+");
+  // fgets(file, 1024, fp);
 
   const gchar* stringKnapsackCapacity = gtk_entry_get_text(knapsackCapacity); 
   if (
