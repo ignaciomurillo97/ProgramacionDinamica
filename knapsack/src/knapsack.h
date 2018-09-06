@@ -12,6 +12,7 @@ typedef struct {
   int *s;
   int knapsackCapacity;
   int n;
+  item_t* items;
 } knapsackResult;
 
 knapsackResult *knapsack (int knapsackCapacity, item_t* items, int n);

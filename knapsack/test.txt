@@ -1,0 +1,5 @@
+8
+Anillo , 1, 15000, 1
+Poster, 4, 5000, 1
+Radio, 3, 9000, 1
+Candelero, 5, 10000, 1

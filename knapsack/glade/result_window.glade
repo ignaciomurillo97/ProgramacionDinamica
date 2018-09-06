@@ -101,7 +101,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkBox" id="cuantities_table">
+                      <object class="GtkBox" id="quantities_table">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="orientation">vertical</property>

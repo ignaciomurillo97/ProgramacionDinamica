@@ -99,6 +99,7 @@ knapsackResult *knapsack (int knapsackCapacity, item_t* items, int n) {
 
     //free(mm);
     //free(result->tabla);
+    result->items = items;
     return result;
 }
 
