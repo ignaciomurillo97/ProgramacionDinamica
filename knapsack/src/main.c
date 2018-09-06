@@ -15,6 +15,10 @@ GtkEntry    *itemValue;
 
 GtkBox      *gtkBoxItemList;
 
+GtkWidget *window;
+GtkWidget *inputWindow;
+char* quantityDefault;
+
 typedef struct itemLine {
   GtkLabel* name;
   GtkLabel* quantity;
@@ -56,7 +60,6 @@ void loadFromFile();
 
 int main(int argc, char *argv[]) {
   GtkBuilder      *builder = 0; 
-  GtkWidget       *window = 0;
 
   itemList = (itemLinkedList*)malloc(sizeof(itemLinkedList));
   valueList = (valueLinkedList*)malloc(sizeof(valueLinkedList));
@@ -66,6 +69,7 @@ int main(int argc, char *argv[]) {
   builder = gtk_builder_new();
   gtk_builder_add_from_file (builder, "glade/main_window.glade", NULL);
 
+  inputWindow = GTK_WIDGET(gtk_builder_get_object(builder, "Input_Window"));
   window = GTK_WIDGET(gtk_builder_get_object(builder, "Main_Window"));
 
   knapsackCapacity = (GtkEntry*)GTK_WIDGET(gtk_builder_get_object(builder, "Entry_Knapsack_Capacity"));
@@ -90,40 +94,27 @@ int main(int argc, char *argv[]) {
 
 void knapsackOneZero(){
   printf("1/0");
-  GtkBuilder      *builder = 0; 
-  GtkWidget       *window = 0;
-
-  itemList = (itemLinkedList*)malloc(sizeof(itemLinkedList));
-  valueList = (valueLinkedList*)malloc(sizeof(valueLinkedList));
-
-
-  builder = gtk_builder_new();
-  gtk_builder_add_from_file (builder, "glade/main_window.glade", NULL);
-
-  window = GTK_WIDGET(gtk_builder_get_object(builder, "Input_Window"));
-
-  knapsackCapacity = (GtkEntry*)GTK_WIDGET(gtk_builder_get_object(builder, "Entry_Knapsack_Capacity"));
-
-
-  itemName = (GtkEntry*)GTK_WIDGET(gtk_builder_get_object(builder, "Entry_Item_Name"));
-  itemQuantity = (GtkEntry*)GTK_WIDGET(gtk_builder_get_object(builder, "Entry_Item_Quantity"));
-  itemCost = (GtkEntry*)GTK_WIDGET(gtk_builder_get_object(builder, "Entry_Item_Cost"));
-  itemValue = (GtkEntry*)GTK_WIDGET(gtk_builder_get_object(builder, "Entry_Item_Value"));
-  
-  gtkBoxItemList = (GtkBox*)GTK_WIDGET(gtk_builder_get_object(builder, "Box_Item_List"));
-
-  gtk_builder_connect_signals(builder, NULL);
-  g_object_unref(builder);
-  gtk_widget_show(window);
-  gtk_main();
-
+  quantityDefault = "1";
+  gtk_entry_set_text(itemQuantity, quantityDefault);
+  gtk_widget_show(inputWindow);
+  gtk_widget_hide(window);
+  gtk_widget_hide(GTK_WIDGET(itemQuantity));
 }
 
 void knapsackBounded(){
+  quantityDefault = "";
+  gtk_entry_set_text(itemQuantity, quantityDefault);
+  gtk_widget_show(inputWindow);
+  gtk_widget_hide(window);
   printf("bounded");
 }
 
 void knapsackUnbounded(){
+  quantityDefault = "1000000000"; //TODO cambiar esta wea
+  gtk_entry_set_text(itemQuantity, quantityDefault);
+  gtk_widget_show(inputWindow);
+  gtk_widget_hide(window);
+  gtk_widget_hide(GTK_WIDGET(itemQuantity));
   printf("Unbounded");
 }
 
@@ -265,13 +256,14 @@ void knapsackLineFromStrings (const char* stringItemName, const char* stringItem
   gtk_entry_set_text(itemName, "");
   gtk_entry_set_text(itemCost, "");
   gtk_entry_set_text(itemValue, "");
-  gtk_entry_set_text(itemQuantity, "");
+  gtk_entry_set_text(itemQuantity, quantityDefault);
 
   gtk_container_add((GtkContainer*)gtkBoxItemList, (GtkWidget*)newEntry);
   gtk_widget_show((GtkWidget*)newEntry);
 }
 
 void addKnapsackItem () {
+  if (itemName == NULL) printf("JUEPUTA");
   const gchar* stringItemName = gtk_entry_get_text(itemName);
   const gchar* stringItemCost = gtk_entry_get_text(itemCost);
   const gchar* stringItemValue = gtk_entry_get_text(itemValue);
