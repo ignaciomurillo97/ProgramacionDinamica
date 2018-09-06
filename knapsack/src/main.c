@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <ctype.h>
+#include <limits.h>
 #include <stdbool.h>
 #include "knapsack.h"
 
@@ -17,7 +18,11 @@ GtkBox      *gtkBoxItemList;
 
 GtkWidget *window;
 GtkWidget *inputWindow;
+
+// bounded
+bool bounded;
 char* quantityDefault;
+GtkLabel *quantityLabel;
 
 typedef struct itemLine {
   GtkLabel* name;
@@ -54,7 +59,7 @@ typedef struct itemLinkedList {
 } itemLinkedList;
 
 itemLinkedList* itemList;
-void setFormulaRepresentation();
+void setFormulaRepresentation(GtkLabel *mathRepLabel, knapsackResult *result);
 void saveToFile ();
 void loadFromFile();
 
@@ -82,6 +87,8 @@ int main(int argc, char *argv[]) {
   
   gtkBoxItemList = (GtkBox*)GTK_WIDGET(gtk_builder_get_object(builder, "Box_Item_List"));
 
+  quantityLabel = GTK_LABEL(gtk_builder_get_object(builder, "Lable_Header_Quantity"));
+
   gtk_builder_connect_signals(builder, NULL);
 
   g_object_unref(builder);
@@ -95,14 +102,17 @@ int main(int argc, char *argv[]) {
 void knapsackOneZero(){
   printf("1/0");
   quantityDefault = "1";
+  bounded = false;
   gtk_entry_set_text(itemQuantity, quantityDefault);
   gtk_widget_show(inputWindow);
   gtk_widget_hide(window);
   gtk_widget_hide(GTK_WIDGET(itemQuantity));
+  gtk_widget_hide(GTK_WIDGET(quantityLabel));
 }
 
 void knapsackBounded(){
   quantityDefault = "";
+  bounded = true;
   gtk_entry_set_text(itemQuantity, quantityDefault);
   gtk_widget_show(inputWindow);
   gtk_widget_hide(window);
@@ -110,11 +120,13 @@ void knapsackBounded(){
 }
 
 void knapsackUnbounded(){
-  quantityDefault = "1000000000"; //TODO cambiar esta wea
+  quantityDefault = "inf";
+  bounded = false;
   gtk_entry_set_text(itemQuantity, quantityDefault);
   gtk_widget_show(inputWindow);
   gtk_widget_hide(window);
   gtk_widget_hide(GTK_WIDGET(itemQuantity));
+  gtk_widget_hide(GTK_WIDGET(quantityLabel));
   printf("Unbounded");
 }
 
@@ -132,7 +144,7 @@ void showResultWindow(knapsackResult* result) {
   grid = GTK_GRID(gtk_builder_get_object(builder, "result_table"));
   mathRep = GTK_LABEL(gtk_builder_get_object(builder, "math_representation_label"));
   resultBox = GTK_BOX(gtk_builder_get_object(builder, "quantities_table"));
-  setFormulaRepresentation(mathRep);
+  setFormulaRepresentation(mathRep, result);
 
   for (int i = 1; i <= result->n; i++) {
     gtk_grid_insert_column(grid, i-1);
@@ -159,7 +171,7 @@ void showResultWindow(knapsackResult* result) {
 
   for (int i = 0; i < result->n; i++) {
     char res[60];
-    snprintf(res, 60, "se llevan %i %ss, con peso %i", result->s[i], result->items[i].name, result->items[i].weight);
+    snprintf(res, 60, "se llevan %i %ss, con peso %i y valor %i", result->s[i], result->items[i].name, result->items[i].weight, result->items[i].value);
     GtkLabel* currLabel = GTK_LABEL(gtk_label_new(res));
     gtk_widget_show(GTK_WIDGET(currLabel));
     gtk_container_add(GTK_CONTAINER(resultBox), GTK_WIDGET(currLabel));
@@ -183,7 +195,7 @@ bool isNumericalInputValid(const gchar* inputValue, char* inputName) {
     return false;
   }
   value = strtol(inputValue, NULL, 10);
-  if (value == 0 && strcmp(inputValue, "0")) {
+  if (value == 0 && strcmp(inputValue, "0") != 0 && strcmp(inputValue, "inf") != 0) { // si no es un numero
     fprintf(stderr, "La entrada \"%s\" debe ser un número.\n", inputName);
     return false;
   }
@@ -229,6 +241,13 @@ GtkLabel* labelFromString (const gchar* value, GtkBox* line) {
  * meter labelFromString en un struct para eliminarlos despues
  */
 
+int stringToLong(const char* s) {
+  if (strcmp(s, "inf") == 0) { //si es inf
+    return INT_MAX;
+  }
+  return strtol(s, NULL, 10);
+}
+
 void knapsackLineFromStrings (const char* stringItemName, const char* stringItemCost, const char* stringItemValue, const char* stringItemQuantity) {
   GtkBox* newEntry = (GtkBox*)gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
   valueLine *newValue = (valueLine*)malloc(sizeof(valueLine));
@@ -241,16 +260,17 @@ void knapsackLineFromStrings (const char* stringItemName, const char* stringItem
       !isNumericalInputValid(stringItemQuantity,  "item quantity")
      ) return;
 
-  labelFromString(stringItemName,     newEntry);
-  labelFromString(stringItemQuantity, newEntry);
-  labelFromString(stringItemCost,     newEntry);
-  labelFromString(stringItemValue,    newEntry);
+  GtkLabel *cLabelName = labelFromString(stringItemName,     newEntry);
+  GtkLabel *cLabelQuant = labelFromString(stringItemQuantity, newEntry);
+  GtkLabel *cLabelCost = labelFromString(stringItemCost,     newEntry);
+  GtkLabel *cLabelValue = labelFromString(stringItemValue,    newEntry);
+  if (!bounded)gtk_widget_hide(GTK_WIDGET(cLabelQuant));
 
   newValue->name = (char*)malloc(sizeof(char)*strlen(stringItemName));
   strcpy(newValue->name, stringItemName);
-  newValue->cost = strtol(stringItemCost, NULL, 10);
-  newValue->value = strtol(stringItemValue, NULL, 10);
-  newValue->quantity = strtol(stringItemQuantity, NULL, 10);
+  newValue->cost = stringToLong(stringItemCost);
+  newValue->value = stringToLong(stringItemValue);
+  newValue->quantity = stringToLong(stringItemQuantity);
   addElementToValues(newValue, valueList);
 
   gtk_entry_set_text(itemName, "");
@@ -263,7 +283,6 @@ void knapsackLineFromStrings (const char* stringItemName, const char* stringItem
 }
 
 void addKnapsackItem () {
-  if (itemName == NULL) printf("JUEPUTA");
   const gchar* stringItemName = gtk_entry_get_text(itemName);
   const gchar* stringItemCost = gtk_entry_get_text(itemCost);
   const gchar* stringItemValue = gtk_entry_get_text(itemValue);
@@ -360,19 +379,35 @@ void closeGtkWindow(GtkWindow* window) {
   gtk_window_close(window);
 }
 
-void setFormulaRepresentation(GtkLabel *mathRepLabel) {
-  int length = 45 + valueList->count * 20;
+void setFormulaRepresentation(GtkLabel *mathRepLabel, knapsackResult *result) {
+  int length = 10000;
   char math[length];
-  strcpy(math, "<span font_desc=\"Serif Italic 18\">Z = ");
+  char currOpperand[30];
+  strcpy(math, "<span font_desc=\"Serif Italic 14\">Z = ");
   valueLine* currLine = valueList->first;
   for (int i = 0; i < valueList->count; i ++) {
-    char currOpperand[30];
-    printf("curr value: %ld\n", currLine->value);
     snprintf(currOpperand, 30, "x<sub>%i</sub>*%ld", i, currLine->value);
     if (i != valueList->count -1) strcat(currOpperand, " + ");
     strcat(math, currOpperand);
     currLine = currLine->next;
   }
+  strcat(math, "\nSujeto a:\n");
+  currLine = valueList->first;
+  for (int i = 0; i < valueList->count; i ++) {
+    snprintf(currOpperand, 30, "x<sub>%i</sub>*%ld", i, currLine->cost);
+    if (i != valueList->count -1) strcat(currOpperand, " + ");
+    strcat(math, currOpperand);
+    currLine = currLine->next;
+  }
+  snprintf(currOpperand, 30, "≤ %i; \n", result->knapsackCapacity);
+  strcat(math, currOpperand);
+  currLine = valueList->first;
+  for (int i = 0; i < valueList->count; i ++) {
+    snprintf(currOpperand, 30, "x<sub>%i</sub> ≤ %ld\n", i, currLine->quantity);
+    strcat(math, currOpperand);
+    currLine = currLine->next;
+  }
   strcat(math, "</span>");
+
   gtk_label_set_markup(mathRepLabel, math);
 }

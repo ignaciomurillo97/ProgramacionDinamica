@@ -36,6 +36,7 @@
             <property name="hscrollbar_policy">never</property>
             <property name="shadow_type">in</property>
             <property name="min_content_height">200</property>
+            <property name="propagate_natural_height">True</property>
             <child>
               <object class="GtkViewport">
                 <property name="visible">True</property>
@@ -101,7 +102,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkBox" id="cuantities_table">
+                      <object class="GtkBox" id="quantities_table">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="orientation">vertical</property>
