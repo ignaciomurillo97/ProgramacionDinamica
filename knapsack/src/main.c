@@ -60,8 +60,8 @@ typedef struct itemLinkedList {
 
 itemLinkedList* itemList;
 void setFormulaRepresentation(GtkLabel *mathRepLabel, knapsackResult *result);
-void saveToFile ();
-void loadFromFile();
+void saveToFile (char* filename);
+void loadFromFile(char* filename);
 
 int main(int argc, char *argv[]) {
   GtkBuilder      *builder = 0; 
@@ -155,7 +155,6 @@ void showResultWindow(knapsackResult* result) {
 
   for (int i = 1; i <= result->n; i++) {
     for (int j = 0; j <= result->knapsackCapacity; j++) {
-      printf("%d ",result->tabla[i][j]);
       char buff[50];
       if (result->color[i][j])
         snprintf(buff, 50, "<span foreground=\"green\">%i(%i)</span>", result->tabla[i][j], result->color[i][j]);
@@ -166,7 +165,15 @@ void showResultWindow(knapsackResult* result) {
       gtk_grid_attach(grid, label, i-1, j, 1, 1);
       gtk_widget_show(label);
     }
-    printf("\n ");
+  }
+
+  gtk_grid_insert_row(grid, 0);
+  valueLine *curr = valueList->first;
+  for (int i = 0; i < valueList->count; i++) {
+      GtkWidget *label = gtk_label_new(curr->name);
+      gtk_grid_attach(grid, label, i, 0, 1, 1);
+      gtk_widget_show(label);
+      curr = curr->next;
   }
 
   for (int i = 0; i < result->n; i++) {
@@ -321,13 +328,13 @@ void calculate () {
   showResultWindow(result);
 }
 
-void loadFromFile() {
+void loadFromFile(char* filename) {
   FILE * fp;
   char * line = NULL;
   size_t len = 0;
   ssize_t read;
 
-  fp = fopen("test.txt", "r");
+  fp = fopen(filename, "r");
   if (fp == NULL)
     exit(EXIT_FAILURE);
 
@@ -355,27 +362,58 @@ void loadFromFile() {
     free(line);
 }
 
+void openLoadDialog(){
+  GtkWidget *dialog;
+  GtkFileChooser *chooser;
+  GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SAVE;
+  gint res;
+
+  dialog = gtk_file_chooser_dialog_new ("Open File",
+      window,
+      action,
+      "Cancel",
+      GTK_RESPONSE_CANCEL,
+      "Open",
+      GTK_RESPONSE_ACCEPT,
+      NULL);
+  chooser = GTK_FILE_CHOOSER (dialog);
+
+
+  res = gtk_dialog_run (GTK_DIALOG (dialog));
+  if (res == GTK_RESPONSE_ACCEPT)
+  {
+    char *filename;
+
+    filename = gtk_file_chooser_get_filename (chooser);
+    loadFromFile(filename);
+    g_free (filename);
+  }
+
+  gtk_widget_destroy (dialog);
+}
+
+
 void openSaveDialog(){
   GtkWidget *dialog;
-GtkFileChooser *chooser;
-GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SAVE;
-gint res;
+  GtkFileChooser *chooser;
+  GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SAVE;
+  gint res;
 
-dialog = gtk_file_chooser_dialog_new ("Save File",
-                                      window,
-                                      action,
-                                      "Cancel",
-                                      GTK_RESPONSE_CANCEL,
-                                      "Save",
-                                      GTK_RESPONSE_ACCEPT,
-                                      NULL);
-chooser = GTK_FILE_CHOOSER (dialog);
+  dialog = gtk_file_chooser_dialog_new ("Save File",
+      window,
+      action,
+      "Cancel",
+      GTK_RESPONSE_CANCEL,
+      "Save",
+      GTK_RESPONSE_ACCEPT,
+      NULL);
+  chooser = GTK_FILE_CHOOSER (dialog);
 
-gtk_file_chooser_set_do_overwrite_confirmation (chooser, TRUE);
-gtk_file_chooser_set_current_name (chooser,("Untitled document"));
+  gtk_file_chooser_set_do_overwrite_confirmation (chooser, TRUE);
+  gtk_file_chooser_set_current_name (chooser,("Untitled document"));
 
-res = gtk_dialog_run (GTK_DIALOG (dialog));
-if (res == GTK_RESPONSE_ACCEPT)
+  res = gtk_dialog_run (GTK_DIALOG (dialog));
+  if (res == GTK_RESPONSE_ACCEPT)
   {
     char *filename;
 
@@ -384,7 +422,7 @@ if (res == GTK_RESPONSE_ACCEPT)
     g_free (filename);
   }
 
-gtk_widget_destroy (dialog);
+  gtk_widget_destroy (dialog);
 }
 
 void saveToFile (char* filename) {

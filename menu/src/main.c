@@ -37,6 +37,12 @@ void shortestRoute() {
     return;
 }
 
+void knapsack() {
+    chdir("../knapsack/");
+    system("./knapsack &");
+    return;
+}
+
 // called when window is closed
 void on_window_main_destroy()
 {

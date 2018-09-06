@@ -38,8 +38,6 @@
   <object class="GtkWindow" id="window_menu">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Programación Dinámica</property>
-    <signal name="delete-event" handler="terminate" swapped="no"/>
-    <signal name="destroy" handler="terminate" swapped="no"/>
     <child>
       <placeholder/>
     </child>
@@ -89,8 +87,8 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="TBD1Btn">
-                <property name="label" translatable="yes">TBD</property>
+              <object class="GtkButton" id="Knapsack">
+                <property name="label" translatable="yes">Knapsack</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -98,7 +96,7 @@
                 <property name="image">tbd1</property>
                 <property name="image_position">top</property>
                 <property name="always_show_image">True</property>
-                <signal name="clicked" handler="tbd" swapped="no"/>
+                <signal name="clicked" handler="knapsack" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">1</property>

@@ -33,20 +33,20 @@ knapsackResult *knapsack (int knapsackCapacity, item_t* items, int n) {
         }
     }
 
-    for (i = 1; i <= n; i++) {
-        for (j = 0; j <= knapsackCapacity; j++) {
-            printf("%d ",result->tabla[i][j]);
-        }
-        printf("\n ");
-    }
-    
-    printf("COLORES \n ");
-    for (i = 1; i <= n; i++) {
-        for (j = 0; j <= knapsackCapacity; j++) {
-            printf("%d ",result->color[i][j]);
-        }
-        printf("\n ");
-    }
+    //for (i = 1; i <= n; i++) {
+    //    for (j = 0; j <= knapsackCapacity; j++) {
+    //        printf("%d ",result->tabla[i][j]);
+    //    }
+    //    printf("\n ");
+    //}
+    //
+    //printf("COLORES \n ");
+    //for (i = 1; i <= n; i++) {
+    //    for (j = 0; j <= knapsackCapacity; j++) {
+    //        printf("%d ",result->color[i][j]);
+    //    }
+    //    printf("\n ");
+    //}
 
     //Respuesta
     result->s = calloc(n, sizeof (int));

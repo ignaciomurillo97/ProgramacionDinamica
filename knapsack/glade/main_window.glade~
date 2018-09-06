@@ -276,7 +276,7 @@
               <object class="GtkFileChooserButton">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="action">save</property>
+                <property name="create_folders">False</property>
                 <property name="title" translatable="yes"/>
               </object>
               <packing>
@@ -291,7 +291,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <signal name="clicked" handler="loadFromFile" swapped="no"/>
+                <signal name="clicked" handler="openLoadDialog" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -400,7 +400,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <signal name="clicked" handler="knapsackOneZero" object="Input_Window" swapped="no"/>
+                <signal name="clicked" handler="knapsackOneZero" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
