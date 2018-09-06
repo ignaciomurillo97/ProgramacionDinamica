@@ -53,6 +53,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">&lt;span font_desc="Serif Italic 18"&gt;Z = x&lt;sub&gt;1&lt;/sub&gt;&lt;/span&gt;</property>
                         <property name="use_markup">True</property>
+                        <property name="justify">center</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>

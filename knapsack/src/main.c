@@ -99,6 +99,32 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
+void clear() {
+  itemLine *currItem = itemList->first;
+  while (currItem != NULL) {
+    gtk_widget_destroy(GTK_WIDGET(currItem->name));
+    gtk_widget_destroy(GTK_WIDGET(currItem->quantity));
+    gtk_widget_destroy(GTK_WIDGET(currItem->cost));
+    gtk_widget_destroy(GTK_WIDGET(currItem->value));
+    itemLine *tmp = currItem;
+    currItem = currItem->next;
+    free(tmp);
+  }
+  itemList->count = 0;
+  itemList->first = NULL;
+  itemList->last = NULL;
+
+  valueLine *currValue = valueList->first;
+  while (currValue != NULL) {
+    valueLine *tmp = currValue;
+    currValue = currValue->next;
+    free(tmp);
+  }
+  valueList->count = 0;
+  valueList->first = NULL;
+  valueList->last = NULL;
+}
+
 void knapsackOneZero(){
   printf("1/0");
   quantityDefault = "1";
@@ -178,7 +204,7 @@ void showResultWindow(knapsackResult* result) {
 
   for (int i = 0; i < result->n; i++) {
     char res[60];
-    snprintf(res, 60, "se llevan %i %ss, con peso %i y valor %i", result->s[i], result->items[i].name, result->items[i].weight, result->items[i].value);
+    snprintf(res, 60, "Se llevan %i %ss, con peso %i y valor %i", result->s[i], result->items[i].name, result->items[i].weight, result->items[i].value);
     GtkLabel* currLabel = GTK_LABEL(gtk_label_new(res));
     gtk_widget_show(GTK_WIDGET(currLabel));
     gtk_container_add(GTK_CONTAINER(resultBox), GTK_WIDGET(currLabel));
@@ -235,6 +261,20 @@ void addElementToValues (valueLine* value, valueLinkedList* list) {
   list->count++;
 }
 
+void addElementToItems (itemLine* value, itemLinkedList* list) {
+  if (list->first == NULL) {
+    list->first = value;
+    list->last = value;
+    value->next = NULL;
+  } else {
+    list->last->next = value;
+    list->last = value;
+    value->next=NULL;
+  }
+  value->index = list->count;
+  list->count++;
+}
+
 GtkLabel* labelFromString (const gchar* value, GtkBox* line) {
   GtkLabel* label     = (GtkLabel*)gtk_label_new(value);
   gtk_widget_set_hexpand((GtkWidget*)label, 1);
@@ -278,6 +318,7 @@ void knapsackLineFromStrings (const char* stringItemName, const char* stringItem
   newItem->quantity = cLabelQuant;
   newItem->cost = cLabelCost;
   newItem->value = cLabelValue;
+  addElementToItems(newItem, itemList);
 
   newValue->name = (char*)malloc(sizeof(char)*strlen(stringItemName));
   strcpy(newValue->name, stringItemName);
