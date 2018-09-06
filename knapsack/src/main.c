@@ -70,6 +70,7 @@ int main(int argc, char *argv[]) {
 
   knapsackCapacity = (GtkEntry*)GTK_WIDGET(gtk_builder_get_object(builder, "Entry_Knapsack_Capacity"));
 
+
   itemName = (GtkEntry*)GTK_WIDGET(gtk_builder_get_object(builder, "Entry_Item_Name"));
   itemQuantity = (GtkEntry*)GTK_WIDGET(gtk_builder_get_object(builder, "Entry_Item_Quantity"));
   itemCost = (GtkEntry*)GTK_WIDGET(gtk_builder_get_object(builder, "Entry_Item_Cost"));
@@ -85,6 +86,45 @@ int main(int argc, char *argv[]) {
   gtk_main();
 
   return 0;
+}
+
+void knapsackOneZero(){
+  printf("1/0");
+  GtkBuilder      *builder = 0; 
+  GtkWidget       *window = 0;
+
+  itemList = (itemLinkedList*)malloc(sizeof(itemLinkedList));
+  valueList = (valueLinkedList*)malloc(sizeof(valueLinkedList));
+
+
+  builder = gtk_builder_new();
+  gtk_builder_add_from_file (builder, "glade/main_window.glade", NULL);
+
+  window = GTK_WIDGET(gtk_builder_get_object(builder, "Input_Window"));
+
+  knapsackCapacity = (GtkEntry*)GTK_WIDGET(gtk_builder_get_object(builder, "Entry_Knapsack_Capacity"));
+
+
+  itemName = (GtkEntry*)GTK_WIDGET(gtk_builder_get_object(builder, "Entry_Item_Name"));
+  itemQuantity = (GtkEntry*)GTK_WIDGET(gtk_builder_get_object(builder, "Entry_Item_Quantity"));
+  itemCost = (GtkEntry*)GTK_WIDGET(gtk_builder_get_object(builder, "Entry_Item_Cost"));
+  itemValue = (GtkEntry*)GTK_WIDGET(gtk_builder_get_object(builder, "Entry_Item_Value"));
+  
+  gtkBoxItemList = (GtkBox*)GTK_WIDGET(gtk_builder_get_object(builder, "Box_Item_List"));
+
+  gtk_builder_connect_signals(builder, NULL);
+  g_object_unref(builder);
+  gtk_widget_show(window);
+  gtk_main();
+
+}
+
+void knapsackBounded(){
+  printf("bounded");
+}
+
+void knapsackUnbounded(){
+  printf("Unbounded");
 }
 
 void showResultWindow(knapsackResult* result) {
