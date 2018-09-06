@@ -251,6 +251,7 @@ int stringToLong(const char* s) {
 void knapsackLineFromStrings (const char* stringItemName, const char* stringItemCost, const char* stringItemValue, const char* stringItemQuantity) {
   GtkBox* newEntry = (GtkBox*)gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
   valueLine *newValue = (valueLine*)malloc(sizeof(valueLine));
+  itemLine *newItem = (itemLine*)malloc(sizeof(itemLine));
   gtk_box_set_homogeneous(newEntry, 1);
 
   if (
@@ -265,6 +266,11 @@ void knapsackLineFromStrings (const char* stringItemName, const char* stringItem
   GtkLabel *cLabelCost = labelFromString(stringItemCost,     newEntry);
   GtkLabel *cLabelValue = labelFromString(stringItemValue,    newEntry);
   if (!bounded)gtk_widget_hide(GTK_WIDGET(cLabelQuant));
+
+  newItem->name = cLabelName;
+  newItem->quantity = cLabelQuant;
+  newItem->cost = cLabelCost;
+  newItem->value = cLabelValue;
 
   newValue->name = (char*)malloc(sizeof(char)*strlen(stringItemName));
   strcpy(newValue->name, stringItemName);
