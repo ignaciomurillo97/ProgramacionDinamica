@@ -365,11 +365,6 @@ gtk_widget_destroy (dialog);
 void saveToFile (char* filename) {
   FILE *fp;
   fp = fopen(filename, "w+");
-  
-  // char file[1024];
-  // FILE *fp = popen("zenity --file-selection", "w+");
-  // fgets(file, 1024, fp);
-
   const gchar* stringKnapsackCapacity = gtk_entry_get_text(knapsackCapacity); 
   if (
       !isStringInputValid (stringKnapsackCapacity, "knapsackCapacity")
