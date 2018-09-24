@@ -29,7 +29,7 @@ int main () {
             int actual_game = (wins - i) + (wins - j) + 1;
             float p = serie[actual_game-1];
             float q = 1-p;
-            m[i][j] = (m[i-1][j]*p + (m[i][j-1]*q));
+            m[i][j] = m[i-1][j]*p + m[i][j-1]*q;
             printf("%f ",m[i][j]);
         }
         printf("\n");
