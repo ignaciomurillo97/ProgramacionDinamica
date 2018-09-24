@@ -18,7 +18,7 @@
   <object class="GtkImage" id="tbd1">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">../../media/tbd1.jpeg</property>
+    <property name="pixbuf">../../media/knapsack.png</property>
   </object>
   <object class="GtkImage" id="tbd2">
     <property name="visible">True</property>
