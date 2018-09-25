@@ -42,6 +42,48 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
+enum {
+  LIST_ITEM = 0,
+  LIST_ITEM2 = 0,
+  N_COLUMNS
+};
+
+void init_list(GtkWidget *list) {
+
+  GtkCellRenderer *renderer;
+  GtkTreeViewColumn *column;
+  GtkTreeViewColumn *column2;
+  GtkListStore *store;
+
+  renderer = gtk_cell_renderer_text_new ();
+  column = gtk_tree_view_column_new_with_attributes("List Items",
+          renderer, "text", LIST_ITEM, NULL);
+  column2 = gtk_tree_view_column_new_with_attributes("List Items2",
+          renderer, "text", LIST_ITEM2, NULL);
+  gtk_tree_view_append_column(GTK_TREE_VIEW(list), column);
+  gtk_tree_view_append_column(GTK_TREE_VIEW(list), column2);
+
+  store = gtk_list_store_new(N_COLUMNS, G_TYPE_STRING);
+
+  gtk_tree_view_set_model(GTK_TREE_VIEW(list), 
+      GTK_TREE_MODEL(store));
+
+  g_object_unref(store);
+}
+
+void add_to_list(GtkWidget *list, const gchar *str) {
+    
+  GtkListStore *store;
+  GtkTreeIter iter;
+
+  store = GTK_LIST_STORE(gtk_tree_view_get_model
+      (GTK_TREE_VIEW(list)));
+
+  gtk_list_store_append(store, &iter);
+  gtk_list_store_set(store, &iter, LIST_ITEM, str, -1);
+  gtk_list_store_set(store, &iter, LIST_ITEM2, str, -1);
+}
+
 float** calculateSeries (int n, float p_h, float p_r, float *serie) {
     int i, j;
     float *mm, **m;
@@ -98,7 +140,7 @@ bool validateEntryToInt(int intValue, const char* stringValue) {
 }
 
 bool validateEntryToFloat(float floatValue, const char* stringValue) {
-  if (floatValue == 0 && strcmp(stringValue, "0") != 0){
+  if ((floatValue == 0 && strcmp(stringValue, "0") != 0) || floatValue > 1 || floatValue < 0){
     return false;
   }
   return true;
@@ -107,18 +149,29 @@ bool validateEntryToFloat(float floatValue, const char* stringValue) {
 void showResult() {
   GtkBuilder  *builder  = 0; 
   GtkWidget   *window   = 0;
+  GtkWidget   *tableCont = 0;
+  GtkWidget   *list     = gtk_tree_view_new();;
 
   builder = gtk_builder_new();
   gtk_builder_add_from_file (builder, "glade/Result.glade", NULL);
 
   window = GTK_WIDGET(gtk_builder_get_object(builder, "ResultWindow"));
   tree = GTK_WIDGET(gtk_builder_get_object(builder, "TableView"));
+  tableCont = GTK_WIDGET(gtk_builder_get_object(builder, "Viewport"));
+
+  init_list(list);
+  gtk_container_add(GTK_CONTAINER(tableCont), list);  
+  add_to_list(list, "Aliens");
+  add_to_list(list, "Leon");
+  add_to_list(list, "The Verdict");
+  add_to_list(list, "North Face");
+  add_to_list(list, "Der Untergang");
 
   gtk_builder_connect_signals(builder, NULL);
 
   g_object_unref(builder);
 
-  gtk_widget_show(window);
+  gtk_widget_show_all(window);
 }
 
 void calculate() {
