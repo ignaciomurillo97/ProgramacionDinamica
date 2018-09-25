@@ -23,7 +23,7 @@
   <object class="GtkImage" id="tbd2">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">../../media/tbd2.jpeg</property>
+    <property name="pixbuf">../../media/nba.png</property>
   </object>
   <object class="GtkImage" id="tbd3">
     <property name="visible">True</property>
@@ -139,7 +139,7 @@
             </child>
             <child>
               <object class="GtkButton" id="TBD4Btn">
-                <property name="label" translatable="yes">TBD</property>
+                <property name="label" translatable="yes">Series Deportivas</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -147,7 +147,7 @@
                 <property name="image">tbd2</property>
                 <property name="image_position">top</property>
                 <property name="always_show_image">True</property>
-                <signal name="clicked" handler="tbd" swapped="no"/>
+                <signal name="clicked" handler="series" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">2</property>

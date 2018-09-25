@@ -43,6 +43,12 @@ void knapsack() {
     return;
 }
 
+void series() {
+    chdir("../SeriesDeportivas/");
+    system("./series &");
+    return;
+}
+
 // called when window is closed
 void on_window_main_destroy()
 {

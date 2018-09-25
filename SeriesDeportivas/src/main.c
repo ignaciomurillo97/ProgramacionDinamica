@@ -262,20 +262,33 @@ void showResult(float** result, int wins) {
   tableCont = GTK_WIDGET(gtk_builder_get_object(builder, "Viewport"));
   gtk_container_add(GTK_CONTAINER(tableCont), GTK_WIDGET(table));
 
-  for (int i = 0; i < wins; i++) {
-    gtk_grid_insert_column(table, i-1);
-    for (int j = 0; j < wins; j++) {
+  for (int i = 0; i <= wins; i++) {
+    gtk_grid_insert_column(table, i);
+    for (int j = 0; j <= wins; j++) {
       gtk_grid_insert_row(table, j);
     }
   }
   gtk_grid_set_row_homogeneous(table, true);
   gtk_grid_set_column_homogeneous(table, true);
 
-  for (int i = 1; i <= wins; i++) {
-    for (int j = 1; j <= wins; j++) {
+  for (int i = 0; i <= wins + 1; i++) {
+    for (int j = 0; j <= wins + 1; j++) {
       char buff[20];
-      snprintf(buff, 20, "%f", result[i][j]);
-      GtkLabel* label = GTK_LABEL(gtk_label_new(buff));
+      GtkLabel* label;
+      if (i == 0 && j == 0) {
+        label = GTK_LABEL(gtk_label_new(""));
+      } else if (j == 0) {
+        snprintf(buff, 20, "%d", i);
+        label = GTK_LABEL(gtk_label_new(buff));
+      } else if (i == 0){
+        snprintf(buff, 20, "%d", j);
+        label = GTK_LABEL(gtk_label_new(buff));
+      } else if (i == 1 && j == 1){
+        label = GTK_LABEL(gtk_label_new("x"));
+      } else {
+        snprintf(buff, 20, "%f", result[i - 1][j - 1]);
+        label = GTK_LABEL(gtk_label_new(buff));
+      }
 
       gtk_widget_set_margin_start(GTK_WIDGET(label), 5);
       gtk_widget_set_margin_end(GTK_WIDGET(label), 5);
