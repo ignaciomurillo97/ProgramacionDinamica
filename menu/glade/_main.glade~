@@ -24,7 +24,6 @@
   <object class="GtkImage" id="tbd2">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="tooltip_markup" translatable="yes">Las finales de la NBA enfrentan a los 2 mejores equipos (A y B) en una serie a "mejor de &lt;i&gt;n&lt;/i&gt; juegos". A tiene una probabilidad &lt;b&gt;p_h&lt;/b&gt; de ganar cada juego individual en casa. Además tiene una probabilidad &lt;b&gt;p_r&lt;/b&gt; de ganar cada juego individual jugando de visita. B tiene probabilidades &lt;b&gt;q_h&lt;/b&gt; = 1 - p_h y &lt;b&gt;q_r&lt;/b&gt; = 1 - p_r. Este progrma calcula la probabilidad de que A sea el campeón de la serie utilizando programación dinámica.</property>
     <property name="pixbuf">../../media/nba.png</property>
   </object>
   <object class="GtkImage" id="tbd3">
@@ -145,7 +144,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="tooltip_markup" translatable="yes">Las finales de la NBA enfrentan a los 2 mejores equipos (A y B) en una serie a "mejor de &lt;i&gt;n&lt;/i&gt; juegos". A tiene una probabilidad &lt;b&gt;p_h&lt;/b&gt; de ganar cada juego individual en casa. Además tiene una probabilidad &lt;b&gt;p_r&lt;/b&gt; de ganar cada juego individual jugando de visita. B tiene probabilidades &lt;b&gt;q_h&lt;/b&gt; = 1 - p_h y &lt;b&gt;q_r&lt;/b&gt; = 1 - p_r. Este progrma calcula la probabilidad de que A sea el campeón de la serie utilizando programación dinámica.</property>
+                <property name="tooltip_text" translatable="yes">Las finales de la NBA enfrentan a los 2 mejores equipos (A y B) en una serie a </property>
                 <property name="image">tbd2</property>
                 <property name="image_position">top</property>
                 <property name="always_show_image">True</property>
