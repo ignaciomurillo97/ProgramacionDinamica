@@ -410,7 +410,7 @@ void openLoadDialog(){
   gint res;
 
   dialog = gtk_file_chooser_dialog_new ("Open File",
-      window,
+      GTK_WINDOW(window),
       action,
       "Cancel",
       GTK_RESPONSE_CANCEL,
