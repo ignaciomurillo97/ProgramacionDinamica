@@ -11,7 +11,7 @@ GtkEntry* gameCountEntry;
 GtkEntry* homeWinProbEntry;
 GtkEntry* visitWinProbEntry;
 GtkBox*   localityCluster;
-GtkWidget* tree;
+GtkGrid*  table;
 
 GtkToggleButton** localityButtons;
 int localityButtonsLength;
@@ -42,80 +42,38 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-enum {
-  LIST_ITEM = 0,
-  LIST_ITEM2 = 0,
-  N_COLUMNS
-};
-
-void init_list(GtkWidget *list) {
-
-  GtkCellRenderer *renderer;
-  GtkTreeViewColumn *column;
-  GtkTreeViewColumn *column2;
-  GtkListStore *store;
-
-  renderer = gtk_cell_renderer_text_new ();
-  column = gtk_tree_view_column_new_with_attributes("List Items",
-          renderer, "text", LIST_ITEM, NULL);
-  column2 = gtk_tree_view_column_new_with_attributes("List Items2",
-          renderer, "text", LIST_ITEM2, NULL);
-  gtk_tree_view_append_column(GTK_TREE_VIEW(list), column);
-  gtk_tree_view_append_column(GTK_TREE_VIEW(list), column2);
-
-  store = gtk_list_store_new(N_COLUMNS, G_TYPE_STRING);
-
-  gtk_tree_view_set_model(GTK_TREE_VIEW(list), 
-      GTK_TREE_MODEL(store));
-
-  g_object_unref(store);
-}
-
-void add_to_list(GtkWidget *list, const gchar *str) {
-    
-  GtkListStore *store;
-  GtkTreeIter iter;
-
-  store = GTK_LIST_STORE(gtk_tree_view_get_model
-      (GTK_TREE_VIEW(list)));
-
-  gtk_list_store_append(store, &iter);
-  gtk_list_store_set(store, &iter, LIST_ITEM, str, -1);
-  gtk_list_store_set(store, &iter, LIST_ITEM2, str, -1);
-}
-
 float** calculateSeries (int n, float p_h, float p_r, float *serie) {
-    int i, j;
-    float *mm, **m;
-    //float serie[7] = {0.57,0.57,0.49,0.49,0.49,0.57,0.57}; //Ese 7 es n y cada campo es o p_h o p_r
+  int i, j;
+  float *mm, **m;
+  //float serie[7] = {0.57,0.57,0.49,0.49,0.49,0.57,0.57}; //Ese 7 es n y cada campo es o p_h o p_r
 
-    int wins = (int)ceil((double)n/2);
-    int m_size = (wins+1) * (wins+1);
-    mm = calloc(m_size, sizeof (float));
-    m = malloc((wins+1) * sizeof (float *));
-    m[0] = mm;
-    
-    for (i = 0; i <= wins; i++) {
-        m[i] = &mm[i * (wins+1)];
-        for (j = 0; j <= wins; j++) {
-            if (i == 0) m[i][j] = 1;
-        }
+  int wins = (int)ceil((double)n/2);
+  int m_size = (wins+1) * (wins+1);
+  mm = calloc(m_size, sizeof (float));
+  m = malloc((wins+1) * sizeof (float *));
+  m[0] = mm;
+
+  for (i = 0; i <= wins; i++) {
+    m[i] = &mm[i * (wins+1)];
+    for (j = 0; j <= wins; j++) {
+      if (i == 0) m[i][j] = 1;
     }
+  }
 
-    for (i = 1; i <= wins; i++) {
-        for (j = 1; j <= wins; j++) {
-            int actual_game = (wins - i) + (wins - j) + 1;
-            float p = serie[actual_game-1];
-            float q = 1-p;
-            m[i][j] = m[i-1][j]*p + m[i][j-1]*q;
-            printf("%f ",m[i][j]);
-        }
-        printf("\n");
+  for (i = 1; i <= wins; i++) {
+    for (j = 1; j <= wins; j++) {
+      int actual_game = (wins - i) + (wins - j) + 1;
+      float p = serie[actual_game-1];
+      float q = 1-p;
+      m[i][j] = m[i-1][j]*p + m[i][j-1]*q;
+      printf("%f ",m[i][j]);
     }
+    printf("\n");
+  }
 
-    return m;
+  return m;
 }
- 
+
 
 void closeGtkApp() {
   gtk_main_quit();
@@ -146,26 +104,38 @@ bool validateEntryToFloat(float floatValue, const char* stringValue) {
   return true;
 }
 
-void showResult() {
+void showResult(float** result, int wins) {
   GtkBuilder  *builder  = 0; 
   GtkWidget   *window   = 0;
   GtkWidget   *tableCont = 0;
-  GtkWidget   *list     = gtk_tree_view_new();;
+
+  table = GTK_GRID(gtk_grid_new());
 
   builder = gtk_builder_new();
   gtk_builder_add_from_file (builder, "glade/Result.glade", NULL);
 
   window = GTK_WIDGET(gtk_builder_get_object(builder, "ResultWindow"));
-  tree = GTK_WIDGET(gtk_builder_get_object(builder, "TableView"));
   tableCont = GTK_WIDGET(gtk_builder_get_object(builder, "Viewport"));
+  gtk_container_add(GTK_CONTAINER(tableCont), GTK_WIDGET(table));
 
-  init_list(list);
-  gtk_container_add(GTK_CONTAINER(tableCont), list);  
-  add_to_list(list, "Aliens");
-  add_to_list(list, "Leon");
-  add_to_list(list, "The Verdict");
-  add_to_list(list, "North Face");
-  add_to_list(list, "Der Untergang");
+  for (int i = 0; i < wins; i++) {
+    gtk_grid_insert_column(table, i-1);
+    for (int j = 0; j < wins; j++) {
+      gtk_grid_insert_row(table, j);
+    }
+  }
+  gtk_grid_set_row_homogeneous(table, true);
+  gtk_grid_set_column_homogeneous(table, true);
+
+  for (int i = 1; i <= wins; i++) {
+    for (int j = 1; j <= wins; j++) {
+      char buff[20];
+      snprintf(buff, 20, "%f", result[i][j]);
+      GtkLabel* label = GTK_LABEL(gtk_label_new(buff));
+      gtk_grid_attach(table, GTK_WIDGET(label), i, j, 1, 1);
+      gtk_widget_show(GTK_WIDGET(label));
+    }
+  }
 
   gtk_builder_connect_signals(builder, NULL);
 
@@ -182,6 +152,8 @@ void calculate() {
   int gameCount = atoi(gameCountString);
   float pc = strtof(pcString, NULL);
   float pr = strtof(prString, NULL);
+
+  int wins = (int)ceil((double)gameCount/2);
 
   float* series = (float*)malloc(sizeof(float) * localityButtonsLength);
   for (int i = 0; i < localityButtonsLength; i++) {
@@ -211,8 +183,9 @@ void calculate() {
   }
 
   float ** result = calculateSeries(localityButtonsLength, pc, pr, series);
+  //calculateSeries(localityButtonsLength, pc, pr, series);
 
-  showResult();
+  showResult(result, wins);
 }
 
 void clearLocalityCluster() {
