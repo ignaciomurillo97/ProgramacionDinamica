@@ -252,6 +252,7 @@ void showResult(float** result, int wins) {
   GtkBuilder  *builder  = 0; 
   GtkWidget   *window   = 0;
   GtkWidget   *tableCont = 0;
+  GtkLabel    *resultLabel = 0;
 
   table = GTK_GRID(gtk_grid_new());
 
@@ -260,6 +261,7 @@ void showResult(float** result, int wins) {
 
   window = GTK_WIDGET(gtk_builder_get_object(builder, "ResultWindow"));
   tableCont = GTK_WIDGET(gtk_builder_get_object(builder, "Viewport"));
+  resultLabel = GTK_LABEL(gtk_builder_get_object(builder, "ResultLabel"));
   gtk_container_add(GTK_CONTAINER(tableCont), GTK_WIDGET(table));
 
   for (int i = 0; i <= wins; i++) {
@@ -286,7 +288,7 @@ void showResult(float** result, int wins) {
       } else if (i == 1 && j == 1){
         label = GTK_LABEL(gtk_label_new("x"));
       } else {
-        snprintf(buff, 20, "%f", result[i - 1][j - 1]);
+        snprintf(buff, 20, "%f", result[j - 1][i - 1]);
         label = GTK_LABEL(gtk_label_new(buff));
       }
 
@@ -299,6 +301,10 @@ void showResult(float** result, int wins) {
       gtk_widget_show(GTK_WIDGET(label));
     }
   }
+
+  char buff[20];
+  snprintf(buff, 20, "Result: %.6f", result[wins][wins]);
+  gtk_label_set_text(resultLabel, buff);
 
   gtk_builder_connect_signals(builder, NULL);
 

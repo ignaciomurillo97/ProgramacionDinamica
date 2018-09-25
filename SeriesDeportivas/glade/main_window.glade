@@ -36,7 +36,7 @@
               <object class="GtkLabel" id="LabelNJuegos">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Numero Máximo de Juegos</property>
+                <property name="label" translatable="yes">Número Máximo de Juegos</property>
               </object>
               <packing>
                 <property name="expand">False</property>
