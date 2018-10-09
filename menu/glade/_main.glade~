@@ -29,7 +29,8 @@
   <object class="GtkImage" id="tbd3">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">../../media/tbd1.jpeg</property>
+    <property name="tooltip_text" translatable="yes">El análisis de reemplazo sirve para averiguar si un equipo esta operando de manera económica o si los costos de operación pueden disminuirse, adquiriendo un nuevo equipo. Además, mediante este análisis se puede averiguar si el equipo actual debe ser reemplazado de inmediato o es mejor esperar unos años, antes de cambiarlo. </property>
+    <property name="pixbuf">../../media/frog.jpg</property>
   </object>
   <object class="GtkImage" id="tbd4">
     <property name="visible">True</property>
@@ -106,7 +107,7 @@
             </child>
             <child>
               <object class="GtkButton" id="TBD2Btn">
-                <property name="label" translatable="yes">TBD</property>
+                <property name="label" translatable="yes">Reemplazo de Equipos</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>

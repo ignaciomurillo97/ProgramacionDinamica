@@ -18,7 +18,7 @@ WARN=-Wall
 
 PTHREAD=-pthread
 
-LIBS=-L/usr/lib -lcgraph -lgvc -lgraph 
+LIBS=-L/usr/lib -lm
 
 CCFLAGS=$(LIBS) $(DEBUG) $(OPT) $(WARN) $(PTHREAD) -pipe
 

@@ -49,6 +49,12 @@ void series() {
     return;
 }
 
+void reemplazo() {
+    chdir("../ReemplazoEquipos");
+    system("./reemplazo &");
+    return;
+}
+
 // called when window is closed
 void on_window_main_destroy()
 {

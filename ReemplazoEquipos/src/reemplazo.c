@@ -3,22 +3,30 @@
 #include <stdio.h>
 #include <math.h>
 
+double myPow(double value, int power) {
+  double result = 1;
+  for (int i = 0; i < power; i++) {
+    result *= value;
+  }
+  return result;
+}
+
 //TODO
 double calcularCosto(int tInicio, int tFinal, struct modeloProblema* problema) {
   int deltaTiempo = tFinal - tInicio;
   if (deltaTiempo > problema->vidaUtil) {
     return -1;
   }
-  double resultado = problema->costoInicial;
+  double resultado = problema->costoInicial * myPow(problema->inflacion, tInicio);
   for (int i = 0; i < deltaTiempo; i++) {
-    resultado += (problema->mantenimiento[i] - problema->ganancia[i]);
+    resultado += (problema->mantenimiento[i] - problema->ganancia[i]) * problema->inflacion;
   }
-  resultado -= problema->venta[deltaTiempo - 1];
+  resultado -= problema->venta[deltaTiempo - 1] * myPow(problema->inflacion, tFinal);
   return resultado;
 }
 
 //TODO
-resultLine* reemplazosOptimos (modeloProblema* problema) {
+resultLine** reemplazosOptimos (modeloProblema* problema) {
   resultLine** resultado = (resultLine**)malloc(sizeof(resultLine*) * problema->plazo - 1);
 
   for (int i = 0; i <= problema->plazo; i++)
@@ -59,5 +67,5 @@ resultLine* reemplazosOptimos (modeloProblema* problema) {
     printf("\n");
   }
   
-  return NULL;
+  return resultado;
 }

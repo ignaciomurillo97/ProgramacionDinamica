@@ -14,4 +14,4 @@ typedef struct modeloProblema{
 } modeloProblema;
 
 double calcularCosto(int tInicio, int tFinal, struct modeloProblema* problema);
-struct resultLine* reemplazosOptimos(struct modeloProblema* problema);
+struct resultLine** reemplazosOptimos(struct modeloProblema* problema);

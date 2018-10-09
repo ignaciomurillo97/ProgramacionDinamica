@@ -21,6 +21,10 @@ GtkEntry** entriesMantenimientos = NULL;
 GtkEntry** entriesVentas = NULL;
 GtkEntry** entriesGanancias = NULL;
 
+typedef struct solutionContainer{
+  int* valores;
+  struct solutionContainer* next;
+} solutionContainer;
 
 bool validarPlazo(const char* stringValue, int value) {
   if (value < 0) return false;
@@ -177,6 +181,80 @@ double* leerGtkContainer(GtkEntry** entryList, int size) {
   return result;
 }
 
+//solutionContainer* container (resultLine** respuesta, modeloProblema *modelo) {
+//  solutionContainer* solucion = (solutionContainer*)malloc(sizeof(solucion));
+//  solucion->valores = (int*)malloc(sizeof(int) * respuesta->plazo);
+//  for (int i = 0; i < respuesta->plazo; i++) {
+//    
+//  }
+//}
+
+void showResult (resultLine** respuesta, modeloProblema *modelo) {
+  GtkBuilder      *builder = 0; 
+  GtkWidget* window;
+
+  GtkLabel* plazoLabel;
+  GtkLabel* vidaUtilLabel;
+  GtkLabel* costoInicialLabel;
+  GtkLabel* inflacionLabel;
+
+  GtkBox* boxMantenimiento;
+  GtkBox* boxVentas;
+  GtkBox* boxGanancias;
+  GtkBox* boxRespuesta;
+
+  builder = gtk_builder_new();
+  gtk_builder_add_from_file (builder, "glade/Respuesta.glade", NULL);
+
+  window = GTK_WIDGET(gtk_builder_get_object(builder, "Main_Window"));
+
+
+  window = GTK_WIDGET(gtk_builder_get_object(builder, "Main_Window"));
+   
+  plazoLabel = GTK_LABEL(gtk_builder_get_object(builder, "plazoLabel"));
+  vidaUtilLabel = GTK_LABEL(gtk_builder_get_object(builder, "vidaUtilLabel"));
+  costoInicialLabel = GTK_LABEL(gtk_builder_get_object(builder, "costiInicialLabel"));
+  inflacionLabel = GTK_LABEL(gtk_builder_get_object(builder, "inflacionLabel"));
+
+  char buff[30];
+
+  snprintf(buff, 30, "%d", modelo->plazo);
+  gtk_label_set_text(plazoLabel, buff);
+  snprintf(buff, 30, "%d", modelo->vidaUtil);
+  gtk_label_set_text(vidaUtilLabel, buff);
+  snprintf(buff, 30, "%f", modelo->costoInicial);
+  gtk_label_set_text(costoInicialLabel, buff);
+  snprintf(buff, 30, "%f", modelo->inflacion);
+  gtk_label_set_text(inflacionLabel, buff);
+
+  boxMantenimiento = GTK_BOX(gtk_builder_get_object(builder, "boxMantenimiento"));
+  boxVentas = GTK_BOX(gtk_builder_get_object(builder, "boxVentas"));
+  boxGanancias = GTK_BOX(gtk_builder_get_object(builder, "boxGanancias"));
+  boxRespuesta = GTK_BOX(gtk_builder_get_object(builder, "boxRespuesta"));
+
+  for (int i = 0; i <= modelo->plazo; i++) {
+    char buff[150];
+    snprintf(buff, 30, "g(%d) = %f : ", i, respuesta[i]->ganancia);
+
+    for (int j = 1; j <= respuesta[i]->reemplazosOptimos[0]; j++) {
+      char nbuff[30];
+      snprintf(nbuff, 30, "%d, ", respuesta[i]->reemplazosOptimos[j]);
+      strcat(buff, nbuff);
+    }
+
+    GtkLabel* l = gtk_label_new(buff);
+    gtk_container_add(GTK_CONTAINER(boxRespuesta),  GTK_WIDGET(l));
+    gtk_widget_show(GTK_WIDGET(l));
+  }
+
+
+  gtk_builder_connect_signals(builder, NULL);
+
+  g_object_unref(builder);
+
+  gtk_widget_show(window);
+}
+
 void calcular () {
   bool valid = true;
   modeloProblema *modelo = (modeloProblema*)malloc(sizeof(modeloProblema));
@@ -186,7 +264,7 @@ void calcular () {
   if (modelo->plazo == -1) valid = false;
   modelo->vidaUtil = entryToInt(vidaUtilEntry);
   if (modelo->vidaUtil == -1) valid = false;
-  modelo->inflacion = entryToDouble01(inflacionEntry);
+  modelo->inflacion = entryToDouble(inflacionEntry);
   if (modelo->inflacion == -1) valid = false;
   modelo->venta = leerGtkContainer(entriesVentas, modelo->vidaUtil);
   if (modelo->venta == NULL) valid = false;
@@ -199,7 +277,8 @@ void calcular () {
     return;
   }
 
-  reemplazosOptimos(modelo);
+  resultLine **l = reemplazosOptimos(modelo);
+  showResult(l, modelo);
 }
 
 void actualizarVidaUtil () {
@@ -310,7 +389,7 @@ void saveToFile (char* filename) {
   if (modelo->plazo == -1) valid = false;
   modelo->vidaUtil = entryToInt(vidaUtilEntry);
   if (modelo->vidaUtil == -1) valid = false;
-  modelo->inflacion = entryToDouble01(inflacionEntry);
+  modelo->inflacion = entryToDouble(inflacionEntry);
   if (modelo->inflacion == -1) valid = false;
   modelo->venta = leerGtkContainer(entriesVentas, modelo->vidaUtil);
   if (modelo->venta == NULL) valid = false;
