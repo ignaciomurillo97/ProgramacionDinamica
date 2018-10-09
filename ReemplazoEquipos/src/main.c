@@ -39,33 +39,35 @@ int entryToInt (GtkEntry* entry) {
   return -1;
 }
 
-double validarDouble(const char* stringValue, double value) {
+double validarDouble(const char* stringValue, double value, char* end) {
   if (value < 0) return false;
-  if (value == 0 && strcmp(stringValue, "0") != 0) return false;
+  if (value == 0 && end == stringValue) return false;
   return true;
 }
 
 double entryToDouble (GtkEntry* entry) {
   const char* strValue = gtk_entry_get_text(entry);
-  double value = strtod(strValue, NULL);
-  if (validarDouble(strValue, value)) {
+  char* end;
+  double value = strtod(strValue, &end);
+  if (validarDouble(strValue, value, end)) {
     return value;
   }
   gtk_entry_set_text(entry, "");
   return -1;
 }
 
-double validarDouble01(const char* stringValue, double value) {
+double validarDouble01(const char* stringValue, double value, char* end) {
   if (value < 0) return false;
   if (value > 1) return false;
-  if (value == 0 && strcmp(stringValue, "0") != 0) return false;
+  if (value == 0 && stringValue == end) return false;
   return true;
 }
 
 double entryToDouble01 (GtkEntry* entry) {
   const char* strValue = gtk_entry_get_text(entry);
-  double value = strtod(strValue, NULL);
-  if (validarDouble01(strValue, value)) {
+  char* end;
+  double value = strtod(strValue, &end);;
+  if (validarDouble01(strValue, value, end)) {
     return value;
   }
   gtk_entry_set_text(entry, "");
@@ -112,7 +114,8 @@ void limpiarGtkContainer(GtkContainer* box, GtkEntry** entryList) {
   for (iter = children; iter != NULL; iter = g_list_next(iter)) {
     gtk_container_remove(box, GTK_WIDGET(iter->data));
   }
-  free(entryList);
+  if (entryList != NULL)
+    free(entryList);
 }
 
 void actualizarListaVentas(int plazo) {
@@ -165,23 +168,37 @@ void actualizarListaMantenimientos(int plazo) {
 
 double* leerGtkContainer(GtkEntry** entryList, int size) {
   double* result = (double*)malloc(sizeof(double) * size);
+  bool valid = true;
   for (int i = 0; i < size; i++){
     result[i] = entryToDouble(entryList[i]);
+    if (result[i] == -1) valid = false;
   }
+  if (!valid) return NULL;
   return result;
 }
 
 void calcular () {
+  bool valid = true;
   modeloProblema *modelo = (modeloProblema*)malloc(sizeof(modeloProblema));
   modelo->costoInicial = entryToDouble(costoEntry);
+  if (modelo->costoInicial == -1) valid = false;
   modelo->plazo = entryToInt(plazoEntry);
+  if (modelo->plazo == -1) valid = false;
   modelo->vidaUtil = entryToInt(vidaUtilEntry);
+  if (modelo->vidaUtil == -1) valid = false;
   modelo->inflacion = entryToDouble01(inflacionEntry);
+  if (modelo->inflacion == -1) valid = false;
   modelo->venta = leerGtkContainer(entriesVentas, modelo->vidaUtil);
+  if (modelo->venta == NULL) valid = false;
   modelo->mantenimiento = leerGtkContainer(entriesMantenimientos, modelo->vidaUtil);
+  if (modelo->mantenimiento == NULL) valid = false;
   modelo->ganancia = leerGtkContainer(entriesGanancias, modelo->vidaUtil);
+  if (modelo->ganancia == NULL) valid = false;
 
-  //double resultado = calcularCosto(2, 4, modelo);
+  if (!valid) {
+    return;
+  }
+
   reemplazosOptimos(modelo);
 }
 
@@ -201,3 +218,152 @@ void closeGtkApp() {
 void closeGtkWindow(GtkWindow* window) {
   gtk_window_close(window);
 }
+
+// Archivos:
+void loadFromFile(char* filename) {
+  FILE * fp;
+  char * line = NULL;
+  size_t len = 0;
+  ssize_t read;
+
+  fp = fopen(filename, "r");
+  if (fp == NULL)
+    exit(EXIT_FAILURE);
+
+  // read capacity
+  if ((read = getline(&line, &len, fp)) != -1) {
+    line = strtok(line,"\n");
+    gtk_entry_set_text(costoEntry, line);
+  }
+  if ((read = getline(&line, &len, fp)) != -1) {
+    line = strtok(line,"\n");
+    gtk_entry_set_text(plazoEntry, line);
+  }
+  if ((read = getline(&line, &len, fp)) != -1) {
+    line = strtok(line,"\n");
+    gtk_entry_set_text(vidaUtilEntry, line);
+  }
+  if ((read = getline(&line, &len, fp)) != -1) {
+    line = strtok(line,"\n");
+    gtk_entry_set_text(inflacionEntry, line);
+  }
+
+  int i = 0;
+  while ((read = getline(&line, &len, fp)) != -1) {
+    char* venta = strtok(line, ",");
+    if (venta == NULL) return;
+    char* mantenimiento = strtok(NULL, ",");
+    if (mantenimiento == NULL) return;
+    char* ganancia = strtok(NULL, "\n");
+    if (ganancia == NULL) return;
+    
+    gtk_entry_set_text(entriesVentas[i], venta);
+    gtk_entry_set_text(entriesMantenimientos[i], mantenimiento);
+    gtk_entry_set_text(entriesGanancias[i], ganancia);
+    i++;
+  }
+
+  fclose(fp);
+  if (line != NULL)
+    free(line);
+}
+
+void openLoadDialog(){
+  GtkWidget *dialog;
+  GtkFileChooser *chooser;
+  GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SAVE;
+  gint res;
+
+  dialog = gtk_file_chooser_dialog_new ("Open File",
+      GTK_WINDOW(window),
+      action,
+      "Cancel",
+      GTK_RESPONSE_CANCEL,
+      "Open",
+      GTK_RESPONSE_ACCEPT,
+      NULL);
+  chooser = GTK_FILE_CHOOSER (dialog);
+
+
+  res = gtk_dialog_run (GTK_DIALOG (dialog));
+  if (res == GTK_RESPONSE_ACCEPT)
+  {
+    char *filename;
+
+    filename = gtk_file_chooser_get_filename (chooser);
+    loadFromFile(filename);
+    g_free (filename);
+  }
+
+  gtk_widget_destroy (dialog);
+}
+
+void saveToFile (char* filename) {
+  FILE *fp;
+  fp = fopen(filename, "w+");
+
+  bool valid = true;
+  modeloProblema *modelo = (modeloProblema*)malloc(sizeof(modeloProblema));
+  modelo->costoInicial = entryToDouble(costoEntry);
+  if (modelo->costoInicial == -1) valid = false;
+  modelo->plazo = entryToInt(plazoEntry);
+  if (modelo->plazo == -1) valid = false;
+  modelo->vidaUtil = entryToInt(vidaUtilEntry);
+  if (modelo->vidaUtil == -1) valid = false;
+  modelo->inflacion = entryToDouble01(inflacionEntry);
+  if (modelo->inflacion == -1) valid = false;
+  modelo->venta = leerGtkContainer(entriesVentas, modelo->vidaUtil);
+  if (modelo->venta == NULL) valid = false;
+  modelo->mantenimiento = leerGtkContainer(entriesMantenimientos, modelo->vidaUtil);
+  if (modelo->mantenimiento == NULL) valid = false;
+  modelo->ganancia = leerGtkContainer(entriesGanancias, modelo->vidaUtil);
+  if (modelo->ganancia == NULL) valid = false;
+
+  if (!valid) {
+    return;
+  }
+
+  fprintf(fp, "%f\n", modelo->costoInicial);
+  fprintf(fp, "%d\n", modelo->plazo);
+  fprintf(fp, "%d\n", modelo->vidaUtil);
+  fprintf(fp, "%f\n", modelo->inflacion);
+
+  for (int i = 0; i < modelo->vidaUtil; i++) {
+    fprintf(fp, "%f,%f,%f\n", modelo->venta[i], modelo->mantenimiento[i], modelo->ganancia[i]);
+  }
+
+  fclose(fp);
+}
+
+void openSaveDialog(GtkWindow* window){
+  GtkWidget *dialog;
+  GtkFileChooser *chooser;
+  GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SAVE;
+  gint res;
+
+  dialog = gtk_file_chooser_dialog_new ("Save File",
+      window,
+      action,
+      "Cancel",
+      GTK_RESPONSE_CANCEL,
+      "Save",
+      GTK_RESPONSE_ACCEPT,
+      NULL);
+  chooser = GTK_FILE_CHOOSER (dialog);
+
+  gtk_file_chooser_set_do_overwrite_confirmation (chooser, TRUE);
+  gtk_file_chooser_set_current_name (chooser,("Untitled document"));
+
+  res = gtk_dialog_run (GTK_DIALOG (dialog));
+  if (res == GTK_RESPONSE_ACCEPT)
+  {
+    char *filename;
+
+    filename = gtk_file_chooser_get_filename (chooser);
+    saveToFile(filename);
+    g_free (filename);
+  }
+
+  gtk_widget_destroy (dialog);
+}
+
